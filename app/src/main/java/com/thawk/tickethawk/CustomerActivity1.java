@@ -1,6 +1,7 @@
 package com.thawk.tickethawk;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -10,11 +11,16 @@ import androidx.annotation.NonNull;
 import com.firebase.ui.auth.AuthUI;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CustomerActivity1 extends Activity {
 
@@ -77,7 +83,36 @@ public class CustomerActivity1 extends Activity {
     }
 
     void customerLogin(){
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+        final String userID = user.getUid();
+        final String userName = user.getDisplayName();
+
+        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot snapshot) {
+
+                boolean snapshotIsNull = snapshot.child("didFinishSigningUp").getValue() == null;
+                boolean didFinishProfile = false;
+                if (!snapshotIsNull){
+                    didFinishProfile = (boolean)snapshot.child("didFinishSigningUp").getValue();
+                }
+                if (snapshotIsNull || !didFinishProfile){
+                    ref.child("customers").child(userID).child("contactName").setValue(userName);
+                    ref.child("customers").child(userID).child("contactEmail").setValue(user.getEmail());
+                    ref.child("customers").child(userID).child("didFinishSigningUp").setValue(false);
+
+                    //continue editing profile...
+                    Intent i = new Intent(CustomerActivity1.this, CustomerActivity2.class);
+                    startActivity(i);
+                } else {
+                    //Transition to main vendor activity
+                }
+            }
+            @Override
+            public void onCancelled(DatabaseError e) {
+            }
+        });
     }
 
 
