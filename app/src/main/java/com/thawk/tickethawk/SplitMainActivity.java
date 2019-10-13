@@ -1,7 +1,5 @@
 package com.thawk.tickethawk;
 
-import androidx.annotation.NonNull;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
@@ -10,15 +8,12 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
 
 public class SplitMainActivity extends Activity {
 
-    DatabaseReference ref;
+    public static DatabaseReference ref;
 
     Button customerButton, vendorButton, tosPressed, privacyPressed;
 
@@ -26,12 +21,10 @@ public class SplitMainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        System.out.println("GGNORE");
-
         ref = FirebaseDatabase.getInstance().getReference();
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_splitmainactivity);
 
         this.findViews();
         this.setOnClickListeners();
@@ -48,6 +41,8 @@ public class SplitMainActivity extends Activity {
             @Override
             public void onClick(View view) {
 
+                Intent i = new Intent(SplitMainActivity.this, CustomerActivity1.class);
+                startActivity(i);
             }
         });
         vendorButton.setOnClickListener(new View.OnClickListener() {

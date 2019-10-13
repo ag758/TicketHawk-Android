@@ -20,6 +20,14 @@
             </intent-filter>
         </activity>
 
+        <activity android:name="com.thawk.tickethawk.CustomerActivity1">
+        </activity>
+
+
+        <activity android:name="com.thawk.tickethawk.CustomerActivity2">
+        </activity>
+
+
 
     </application>
 

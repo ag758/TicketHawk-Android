@@ -9,4 +9,8 @@
     <string name="termsOfServiceURL">http://www.google.com</string>
     <string name="howToGetPaidURL">http://www.yahoo.com</string>
     <string name="howToReportURL">http://www.facebook.com</string>
+
+    <string name="facebook_application_id" translatable="false">1433152453476083</string>
+    <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
+    <string name="facebook_login_protocol_scheme" translatable="false">fbAPP_ID</string>
 </resources>
