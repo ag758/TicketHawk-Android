@@ -31,8 +31,6 @@ public class CustomerActivity1 extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ref = SplitMainActivity.ref;
-
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_customeractivity1);
 
@@ -88,15 +86,20 @@ public class CustomerActivity1 extends Activity {
         final String userID = user.getUid();
         final String userName = user.getDisplayName();
 
-        ref.addListenerForSingleValueEvent(new ValueEventListener() {
+        ref = FirebaseDatabase.getInstance().getReference();
+
+        ref.child("customers").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot snapshot) {
 
                 boolean snapshotIsNull = snapshot.child("didFinishSigningUp").getValue() == null;
                 boolean didFinishProfile = false;
                 if (!snapshotIsNull){
-                    didFinishProfile = (boolean)snapshot.child("didFinishSigningUp").getValue();
+                    didFinishProfile = (boolean)(snapshot.child("didFinishSigningUp").getValue());
                 }
+
+                Log.i("condition1", String.valueOf(snapshotIsNull));
+                Log.i("condition2", String.valueOf(didFinishProfile));
                 if (snapshotIsNull || !didFinishProfile){
                     ref.child("customers").child(userID).child("contactName").setValue(userName);
                     ref.child("customers").child(userID).child("contactEmail").setValue(user.getEmail());
@@ -106,7 +109,12 @@ public class CustomerActivity1 extends Activity {
                     Intent i = new Intent(CustomerActivity1.this, CustomerActivity2.class);
                     startActivity(i);
                 } else {
-                    //Transition to main vendor activity
+                    //Transition to main customer activity
+
+                    Intent i = new Intent(CustomerActivity1.this, CustomerMainActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(i);
+
                 }
             }
             @Override

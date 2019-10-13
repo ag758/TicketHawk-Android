@@ -11,10 +11,11 @@
         android:roundIcon="@mipmap/thawk_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:windowSoftInputMode="adjustPan">
+        >
 
 
-        <activity android:name="com.thawk.tickethawk.SplitMainActivity">
+        <activity android:name="com.thawk.tickethawk.SplitMainActivity"
+            android:theme ="@style/splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -26,7 +27,15 @@
         </activity>
 
 
-        <activity android:name="com.thawk.tickethawk.CustomerActivity2">
+        <activity android:name="com.thawk.tickethawk.CustomerActivity2"
+            android:windowSoftInputMode="stateVisible|adjustPan"
+           >
+        </activity>
+
+        <activity android:name="com.thawk.tickethawk.CustomerMainActivity"
+            android:windowSoftInputMode="stateVisible|adjustPan"
+            android:launchMode="singleTop"
+            >
         </activity>
 
 
