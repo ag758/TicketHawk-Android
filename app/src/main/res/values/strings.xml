@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">TicketHawk</string>
+
+    <string name="publishableKey">pk_test_fKyLqJd3qZN9L1aUlHCIobOi00PTyZP089</string>
+    <string name="baseURLString">https://secure-coast-21802.herokuapp.com</string>
+    <string name="defaultCurrency">usd</string>
+    <string name="defaultDescription">Purchase from TicketHawk</string>
+    <string name="privacyPolicyURL">http://www.apple.com</string>
+    <string name="termsOfServiceURL">http://www.google.com</string>
+    <string name="howToGetPaidURL">http://www.yahoo.com</string>
+    <string name="howToReportURL">http://www.facebook.com</string>
 </resources>
