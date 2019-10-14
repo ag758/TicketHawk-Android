@@ -25,31 +25,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <Button
-        android:id="@+id/vendorButton"
-        style="@style/rounded_rec_button"
-        android:layout_width="0dp"
-        android:layout_height="40dp"
-        android:layout_marginStart="60dp"
-        android:layout_marginLeft="60dp"
-        android:layout_marginEnd="60dp"
-        android:layout_marginRight="60dp"
-        android:layout_marginBottom="10dp"
-        android:text="I'm Selling Tickets"
-
-        android:textSize="15sp"
-
-
-        app:layout_constraintBottom_toTopOf="@+id/customerButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        app:layout_constraintBottom_toTopOf="@+id/vendorButton"
+        app:layout_constraintBottom_toTopOf="@+id/customerButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
@@ -58,12 +37,12 @@
             style="@style/Widget.AppCompat.Button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Privacy Policy"
-
             android:background="@android:color/transparent"
-            android:textColor = "@android:color/darker_gray"
+
             android:padding="0dp"
+            android:text="Privacy Policy"
             android:textAllCaps="false"
+            android:textColor="@android:color/darker_gray"
             android:textSize="13sp"
 
             app:layout_constraintBottom_toBottomOf="parent"
@@ -77,12 +56,12 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="10dp"
             android:layout_marginRight="10dp"
-            android:text="Terms of Service"
-
             android:background="@android:color/transparent"
-            android:textColor = "@android:color/darker_gray"
+
             android:padding="0dp"
+            android:text="Terms of Service"
             android:textAllCaps="false"
+            android:textColor="@android:color/darker_gray"
             android:textSize="13sp"
 
             app:layout_constraintBottom_toBottomOf="parent"

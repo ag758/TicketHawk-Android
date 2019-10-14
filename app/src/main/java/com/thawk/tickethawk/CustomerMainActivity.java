@@ -2,6 +2,7 @@ package com.thawk.tickethawk;
 
 import android.app.ActionBar;
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -98,5 +99,18 @@ public class CustomerMainActivity extends FragmentActivity {
             }
         };
         this.bNV.setOnNavigationItemSelectedListener(listener);
+    }
+
+    public void transitionToVendorList(String vendorID){
+        Intent i = new Intent(CustomerMainActivity.this, CustomerVendorListActivity.class);
+        i.putExtra("vendorID", vendorID);
+        startActivity(i);
+    }
+
+    public void transitionToCustomerEvent(String vendorID, String eventID){
+        Intent i = new Intent(CustomerMainActivity.this, EventActivity.class);
+        i.putExtra("vendorID", vendorID);
+        i.putExtra("eventID", eventID);
+        startActivity(i);
     }
 }

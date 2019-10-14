@@ -15,7 +15,7 @@ public class SplitMainActivity extends Activity {
 
     public static DatabaseReference ref;
 
-    Button customerButton, vendorButton, tosPressed, privacyPressed;
+    Button customerButton, tosPressed, privacyPressed;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +32,6 @@ public class SplitMainActivity extends Activity {
 
     public void findViews(){
         customerButton = findViewById(R.id.customerButton);
-        vendorButton = findViewById(R.id.vendorButton);
         tosPressed = findViewById(R.id.tosButton);
         privacyPressed = findViewById(R.id.privacyButton);
     }
@@ -43,12 +42,6 @@ public class SplitMainActivity extends Activity {
 
                 Intent i = new Intent(SplitMainActivity.this, CustomerActivity1.class);
                 startActivity(i);
-            }
-        });
-        vendorButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
             }
         });
         tosPressed.setOnClickListener(new View.OnClickListener() {

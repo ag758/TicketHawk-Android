@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.squareup.picasso.Picasso;
 import com.thawk.tickethawk.BaseClasses.Vendor;
 import com.thawk.tickethawk.CustomerActivity2;
+import com.thawk.tickethawk.CustomerMainActivity;
 import com.thawk.tickethawk.CustomerMainBrowseFragment;
 import com.thawk.tickethawk.R;
 
@@ -54,6 +55,7 @@ public class VendorAdapter extends RecyclerView.Adapter<VendorAdapter.MyViewHold
 
         @Override
         public void onClick(View v) {
+
         }
 
 
@@ -68,11 +70,18 @@ public class VendorAdapter extends RecyclerView.Adapter<VendorAdapter.MyViewHold
     }
 
     @Override
-    public void onBindViewHolder(final @NonNull VendorAdapter.MyViewHolder myViewHolder, int position) {
+    public void onBindViewHolder(final @NonNull VendorAdapter.MyViewHolder myViewHolder, final int position) {
 
         Log.i("vendor_adapter", "cell");
         myViewHolder.vendorName.setText(mDataset.get(position).name);
         myViewHolder.categoryName.setText(mDataset.get(position).ticketCategory);
+
+        myViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((CustomerMainActivity)mContext).transitionToVendorList(mDataset.get(position).id);
+            }
+        });
 
 
         try {

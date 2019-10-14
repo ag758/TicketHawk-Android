@@ -39,6 +39,15 @@
             >
         </activity>
 
+        <activity android:name="com.thawk.tickethawk.CustomerVendorListActivity">
+        </activity>
+
+        <activity android:name="com.thawk.tickethawk.EventActivity">
+        </activity>
+
+        <activity android:name="com.thawk.tickethawk.EventTicketNumberActivity">
+        </activity>
+
 
 
     </application>
