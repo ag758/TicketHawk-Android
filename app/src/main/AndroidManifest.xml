@@ -33,6 +33,7 @@
         </activity>
 
         <activity android:name="com.thawk.tickethawk.CustomerMainActivity"
+            android:theme ="@style/splash"
             android:windowSoftInputMode="stateVisible|adjustPan"
             android:launchMode="singleTop"
             >

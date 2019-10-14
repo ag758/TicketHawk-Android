@@ -1,13 +1,13 @@
 package com.thawk.tickethawk.BaseClasses;
 
 public class Event {
-    String title;
-    String dateAndTime;
-    String lowestPrice;
-    String imageURL;
-    String id;
-    String creatorId;
-    String creatorName;
+    public String title;
+    public String dateAndTime;
+    public String lowestPrice;
+    public String imageURL;
+    public String id;
+    public String creatorId;
+    public String creatorName;
 
     public Event(String title, String dateAndTime, String lowestPrice, String imageURL, String id, String creatorID, String creatorName){
         this.title = title;
