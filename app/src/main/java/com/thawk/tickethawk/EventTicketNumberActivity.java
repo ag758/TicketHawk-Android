@@ -21,8 +21,10 @@ import com.google.firebase.database.ValueEventListener;
 import com.thawk.tickethawk.RecyclerClasses.EventModAdapter;
 import com.thawk.tickethawk.RecyclerClasses.TicketTypeAdapter;
 
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class EventTicketNumberActivity extends Activity {
@@ -75,6 +77,46 @@ public class EventTicketNumberActivity extends Activity {
                 DividerItemDecoration.VERTICAL);
         ticketsRecyclerView.addItemDecoration(dividerItemDecoration);
 
+    }
+
+    public void updateTotalPrice(){
+        calculateItemTotal();
+
+        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+
+        Double newfees = (Double.valueOf(this.fees)) / 100;
+        Double newsubtotal = (Double.valueOf(this.paymentTotalInt)) / 100;
+
+        this.feeTextView.setText("Processing Fee: " + formatter.format(newfees));
+        this.subtotalTextView.setText("Total: " + formatter.format(newsubtotal));
+    }
+
+    void calculateItemTotal(){
+        NumberFormat formatter = NumberFormat.getCurrencyInstance();
+
+        int total = 0;
+        this.purchaseQuantity = 0;
+
+        for ( Map.Entry<TicketType,Integer> e : map.entrySet()){
+
+            int q = e.getValue();
+            int p = e.getKey().price;
+
+            this.purchaseQuantity = this.purchaseQuantity + q;
+
+            total = total + p * q;
+
+        }
+
+        this.paymentTotalWithoutTaxInt = total;
+
+        if (total > 0){
+            this.fees = (int)(Math.ceil(  (Double.valueOf(total) + 30.0)  * 0.20 )  );
+            this.paymentTotalInt = (this.fees) + total;
+        } else {
+            this.fees = 0;
+            this.paymentTotalInt = 0;
+        }
     }
 
     void loadTicketTypes(){

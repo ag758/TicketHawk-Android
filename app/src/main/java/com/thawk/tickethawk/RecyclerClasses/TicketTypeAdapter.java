@@ -73,7 +73,9 @@ public class TicketTypeAdapter extends RecyclerView.Adapter<TicketTypeAdapter.My
         myViewHolder.ticketName.setText(mDataset.get(position).name);
 
         NumberFormat formatter = NumberFormat.getCurrencyInstance();
-        String number = formatter.format(Float.valueOf(mDataset.get(position).price));
+
+        double newdouble = (double)((Double.valueOf(mDataset.get(position).price) / 100));
+        String number = formatter.format(newdouble);
 
         myViewHolder.ticketPrice.setText(number);
 
@@ -89,9 +91,9 @@ public class TicketTypeAdapter extends RecyclerView.Adapter<TicketTypeAdapter.My
                 try {
                     quant = Integer.parseInt(charSequence.toString());
                 } catch (Exception e){
-
                 }
                 ((EventTicketNumberActivity)mContext).map.put(mDataset.get(position), quant);
+                ((EventTicketNumberActivity)mContext).updateTotalPrice();
             }
 
             @Override
