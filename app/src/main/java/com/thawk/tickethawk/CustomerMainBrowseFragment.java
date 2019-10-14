@@ -2,11 +2,14 @@ package com.thawk.tickethawk;
 
 import android.os.Bundle;
 import android.renderscript.Sampler;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -33,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Locale;
 
 public class CustomerMainBrowseFragment extends Fragment {
@@ -42,11 +46,12 @@ public class CustomerMainBrowseFragment extends Fragment {
     ArrayList<Vendor> vendors = new ArrayList<>();
     ArrayList<Event> loadedEvents = new ArrayList<>();
     ArrayList<String> loadedEventsStringIDs = new ArrayList<>();
-    ArrayList<Vendor> filteredVendors = new ArrayList<>();
 
     RecyclerView eventsRecyclerView, vendorsRecyclerView;
     RecyclerView.Adapter mEventsAdapter, mVendorsAdapter;
     RecyclerView.LayoutManager mEventsLayoutManager, mVendorsLayoutManager;
+
+    EditText searchText;
 
     Button communityTitle;
 
@@ -57,7 +62,47 @@ public class CustomerMainBrowseFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_browse, parent, false);
         ref = FirebaseDatabase.getInstance().getReference();
 
+        this.vendors = new ArrayList<>();
+        this.loadedEvents = new ArrayList<>();
+        this.loadedEventsStringIDs = new ArrayList<>();
+        //this.mVendorsAdapter.notifyDataSetChanged();
+        //this.mEventsAdapter.notifyDataSetChanged();
+
+        searchText = v.findViewById(R.id.editText);
+
+
+
         return v;
+    }
+
+    public void setFiltered(CharSequence charSequence){
+        if (charSequence == null ){
+            return;
+        }
+
+        charSequence = charSequence.toString().toLowerCase();
+
+        ArrayList<Vendor> filtered = new ArrayList<>();
+
+        if (charSequence.toString().equals("")){
+            filtered = vendors;
+        } else {
+            for (Vendor v : vendors){
+                if ((v.name + v.ticketCategory).toLowerCase().contains(charSequence.toString())){
+                    filtered.add(v);
+                }
+            }
+        }
+
+        mVendorsAdapter = new VendorAdapter(filtered, getContext(), CustomerMainBrowseFragment.this);
+        vendorsRecyclerView.setAdapter(mVendorsAdapter);
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+        searchText.setText("");
+        setFiltered(searchText.getText().toString());
     }
 
     @Override
@@ -67,12 +112,23 @@ public class CustomerMainBrowseFragment extends Fragment {
         findViews(view);
         loadCommunity();
 
-        communityTitle.setOnClickListener(new View.OnClickListener() {
+
+        setFiltered(searchText.getText().toString());
+
+        searchText.addTextChangedListener(new TextWatcher() {
             @Override
-            public void onClick(View view) {
-                for (Vendor e: filteredVendors){
-                    Log.i("debug_main_cust", e.pictureURL);
-                }
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                setFiltered(charSequence);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
             }
         });
 
@@ -85,7 +141,7 @@ public class CustomerMainBrowseFragment extends Fragment {
         vendorsRecyclerView = v.findViewById(R.id.recyclerView2);
 
         mEventsAdapter = new EventAdapter(loadedEvents, getContext());
-        mVendorsAdapter = new VendorAdapter(filteredVendors, getContext());
+        mVendorsAdapter = new VendorAdapter(vendors, getContext(), this);
 
         mEventsLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
         mVendorsLayoutManager = new LinearLayoutManager(getContext());
@@ -99,13 +155,7 @@ public class CustomerMainBrowseFragment extends Fragment {
     }
 
     void loadCommunity(){
-        //this.vendors = new ArrayList<>();
-        //this.loadedEvents = new ArrayList<>();
-        //this.loadedEventsStringIDs = new ArrayList<>();
-        //this.filteredVendors = new ArrayList<>();
 
-        this.mVendorsAdapter.notifyDataSetChanged();
-        this.mEventsAdapter.notifyDataSetChanged();
 
         String userID = FirebaseAuth.getInstance().getUid();
         ref.child("customers").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -327,11 +377,8 @@ public class CustomerMainBrowseFragment extends Fragment {
                 Vendor vendorToBeAdded = new Vendor(k, orgName, pictureURL, ticketCategory);
 
                 vendors = randomAppend(vendors, vendorToBeAdded);
-
-                filteredVendors = vendors;
                 mVendorsAdapter.notifyDataSetChanged();
 
-                Log.i("debug_amount", "vendors_size" + " " + String.valueOf(filteredVendors.size()));
             }
 
             @Override

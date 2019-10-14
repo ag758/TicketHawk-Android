@@ -7,15 +7,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 import com.thawk.tickethawk.BaseClasses.Vendor;
 import com.thawk.tickethawk.CustomerActivity2;
+import com.thawk.tickethawk.CustomerMainBrowseFragment;
 import com.thawk.tickethawk.R;
 
 import java.net.URI;
@@ -25,11 +29,13 @@ public class VendorAdapter extends RecyclerView.Adapter<VendorAdapter.MyViewHold
 
     public ArrayList<Vendor> mDataset = new ArrayList<>();
     private Context mContext;
+    CustomerMainBrowseFragment f;
 
 
-    public VendorAdapter(ArrayList<Vendor> dataset, Context context){
+    public VendorAdapter(ArrayList<Vendor> dataset, Context context, CustomerMainBrowseFragment f){
         mDataset = dataset;
         mContext = context;
+        this.f = f;
     }
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -78,11 +84,8 @@ public class VendorAdapter extends RecyclerView.Adapter<VendorAdapter.MyViewHold
         }
     }
 
-
-
     @Override
     public int getItemCount() {
         return mDataset.size();
     }
-
 }
