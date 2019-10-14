@@ -72,7 +72,7 @@
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginBottom="24dp"
-        android:background="@android:color/white"
+        android:background="@drawable/filled_rounded_rec_white"
         app:layout_constraintBottom_toTopOf="@+id/event_processing_fee"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
