@@ -322,7 +322,7 @@ public class CustomerMainBrowseFragment extends Fragment {
                 }
                 SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("MMM d, h:mm a", Locale.US);
                 try {
-                    startDateAndTime = simpleDateFormat.format(d1);
+                    startDateAndTime = simpleDateFormat2.format(d1);
                 } catch (Exception e) {
 
                 }
