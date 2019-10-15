@@ -4,28 +4,37 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.database.connection.ConnectionAuthTokenProvider;
 import com.stripe.android.ApiResultCallback;
 import com.stripe.android.Stripe;
 import com.stripe.android.model.Card;
 import com.stripe.android.model.PaymentMethod;
 import com.stripe.android.model.Token;
 
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.net.URI;
+import java.util.List;
 
 public class StripeActivity extends Activity {
 
@@ -44,19 +53,17 @@ public class StripeActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stripe);
 
+        amount = 1000;
+        name = "TicketHawk";
+
         stripe = new Stripe(this, getResources().getString(R.string.publishableKey));
     }
 
-    public void submitCard(View v, StripeActivity sB){
+    public void submitCard(View v){
         TextView cardNumberField = (TextView) findViewById(R.id.cardNumber);
         TextView monthField = (TextView) findViewById(R.id.month);
         TextView yearField = (TextView) findViewById(R.id.year);
         TextView cvcField = (TextView) findViewById(R.id.cvc);
-
-
-
-        this.sA = sB;
-
 
         card = new Card.Builder(
                 cardNumberField.getText().toString(),
@@ -67,95 +74,105 @@ public class StripeActivity extends Activity {
 
 
 
-        stripe.createToken(card, getResources().getString(R.string.publishableKey), new StripeTokenCallback() {
+        stripe.createToken(
+                card,
+                new ApiResultCallback<Token>() {
+                    public void onSuccess(@NonNull Token token) {
+                        // send token ID to your server, you'll create a charge next
 
+                        tok = token;
+                        new StripeCharge(token.getId()).execute();
+                    }
 
-            public void onSuccess(Token token) {
-                // TODO: Send Token information to your backend to initiate a charge
-                Toast.makeText(getApplicationContext(), "Token created: " + token.getId(), Toast.LENGTH_LONG).show();
+                    @Override
+                    public void onError(@NotNull Exception e) {
 
-                tok = token;
-                new StripeCharge(token.getId(), pKey).execute();
-            }
-
-            public void onError(Exception error) {
-                Log.d("Stripe", error.getLocalizedMessage());
-            }
-        });
+                    }
+                }
+        );
     }
 
+    public class StripeCharge extends AsyncTask<String, Void, String> {
+        String token;
 
+        public StripeCharge(String token) {
+            this.token = token;
+        }
 
+        @Override
+        protected String doInBackground(String... params) {
+            new Thread() {
+                @Override
+                public void run() {
+                    postData(name,token,"" + amount);
+                }
+            }.start();
+            return "Done";
+        }
 
-}
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            Log.e("Result",s);
+        }
 
-public class StripeCharge extends AsyncTask<String, Void, String> {
-    String token;
-    StripeActivity sA;
-
-    public StripeCharge(String token, StripeActivity sA) {
-        this.token = token;
-        this.sA = sA;
-    }
-
-    @Override
-    protected String doInBackground(String... params) {
-        new Thread() {
-            @Override
-            public void run() {
-                postData(name,token,""+amount);
-            }
-        }.start();
-        return "Done";
-    }
-
-    @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
-        Log.e("Result",s);
-    }
-
-    public void postData(String description, String token,String amount) {
-        // Create a new HttpClient and Post Header
-        try {
-            URL url;
+        public void postData(String description, String token,String amount) {
+            // Create a new HttpClient and Post Header
             try {
-                String pk = (sA).getResources().getString(R.string.publishableKey);
-                url = new URL(pk);
-            } catch (Exception e){
-                url = new URL("");
-            }
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000);
-            conn.setConnectTimeout(15000);
-            try {
+                URL url = new URL(getResources().getString(R.string.baseURLString));
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setReadTimeout(10000);
+                conn.setConnectTimeout(15000);
                 conn.setRequestMethod("POST");
-            } catch (Exception e){
+                conn.setDoInput(true);
+                conn.setDoOutput(true);
 
+                List<NameValuePair> params = new ArrayList<NameValuePair>();
+                params.add(new BasicNameValuePair("method", "charge"));
+                params.add(new BasicNameValuePair("description", description));
+                params.add(new BasicNameValuePair("source", token));
+                params.add(new BasicNameValuePair("amount", amount));
+
+                OutputStream os = null;
+
+                os = conn.getOutputStream();
+                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                writer.write(getQuery(params));
+                writer.flush();
+                writer.close();
+                os.close();
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        private String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException
+        {
+            StringBuilder result = new StringBuilder();
+            boolean first = true;
+
+            for (NameValuePair pair : params)
+            {
+                if (first)
+                    first = false;
+                else
+                    result.append("&");
+
+                result.append(URLEncoder.encode(pair.getName(), "UTF-8"));
+                result.append("=");
+                result.append(URLEncoder.encode(pair.getValue(), "UTF-8"));
             }
 
-            conn.setDoInput(true);
-            conn.setDoOutput(true);
-
-            HashMap<String, Object> params = new HashMap<String, Object>();
-            params.put("method", "charge");
-            params.put("description", description);
-            params.put("source", token);
-            params.put("amount", amount);
-
-            OutputStream os = null;
-
-            os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            writer.write(getQuery(params));
-            writer.flush();
-            writer.close();
-            os.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            return result.toString();
         }
     }
+
+
+
+
 }
+
+
 
 

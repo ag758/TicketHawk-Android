@@ -77,6 +77,18 @@ public class EventTicketNumberActivity extends Activity {
                 DividerItemDecoration.VERTICAL);
         ticketsRecyclerView.addItemDecoration(dividerItemDecoration);
 
+        confirmPurchase.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(EventTicketNumberActivity.this, StripeActivity.class);
+
+                // Put extras here
+
+
+                startActivity(i);
+            }
+        });
+
     }
 
     public void updateTotalPrice(){
