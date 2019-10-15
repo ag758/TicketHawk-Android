@@ -22,6 +22,7 @@
 
         <activity android:name="com.thawk.tickethawk.SplitMainActivity"
             android:theme ="@style/splash">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -55,6 +56,8 @@
         </activity>
 
         <activity android:name="com.thawk.tickethawk.StripeActivity">
+
+
         </activity>
 
 
