@@ -9,10 +9,12 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -149,6 +151,44 @@ public class EventTicketNumberActivity extends Activity {
 
                     ticketsAdapter.notifyDataSetChanged();
                 }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        ref.child("vendors").child(vendorID).child("events").child(eventId).child("ticketTypes").addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                String name = (String)dataSnapshot.getKey();
+
+                ArrayList<TicketType> toBeRemoved = new ArrayList<>();
+
+                for (TicketType t : (EventTicketNumberActivity.this).ticketTypes){
+                    if ((t.name).equals(name)){
+                        toBeRemoved.add(t);
+                    }
+                }
+
+                ticketTypes.removeAll(toBeRemoved);
+                ticketsAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
             }
 
             @Override

@@ -8,10 +8,12 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.connection.ConnectionAuthTokenProvider;
 import com.stripe.android.ApiResultCallback;
@@ -41,7 +43,7 @@ import java.util.HashMap;
 import java.net.URI;
 import java.util.List;
 
-public class StripeActivity extends Activity {
+public class StripeActivity extends AppCompatActivity {
 
     Stripe stripe;
     Integer amount;
@@ -51,9 +53,13 @@ public class StripeActivity extends Activity {
 
     Button submitButton;
 
+    EditText cardNumberField, monthField, yearField;
+
     public String pKey;
 
     StripeActivity sA;
+
+    boolean shouldAllowBack = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,15 +71,30 @@ public class StripeActivity extends Activity {
 
         stripe = new Stripe(this, getResources().getString(R.string.publishableKey));
         submitButton = (Button)findViewById(R.id.submitButton);
+
+        cardNumberField = (EditText) findViewById(R.id.cardNumber);
+        cardNumberField.addTextChangedListener(new FourDigitCardFormatWatcher());
+
+        monthField = (EditText) findViewById(R.id.month);
+        yearField = (EditText) findViewById(R.id.year);
+
+        //monthField.addTextChangedListener(new TwoDigitFormatWatcher());
+        //yearField.addTextChangedListener(new TwoDigitFormatWatcher());
     }
 
     public void submitCard(View v){
 
-        submitButton.setEnabled(false);
+        disableBreaks();
 
-        TextView cardNumberField = (TextView) findViewById(R.id.cardNumber);
-        TextView monthField = (TextView) findViewById(R.id.month);
-        TextView yearField = (TextView) findViewById(R.id.year);
+        //Formatting
+        if (monthField.length() < 2){
+            monthField.getEditableText().insert(0, "0");
+        }
+        if (yearField.length() > 2){
+            yearField.getEditableText().insert(0, "0");
+        }
+
+
         TextView cvcField = (TextView) findViewById(R.id.cvc);
 
         card = new Card.Builder(
@@ -83,13 +104,14 @@ public class StripeActivity extends Activity {
                 cvcField.getText().toString()
         ).build();
 
+        //Toast.makeText(getApplicationContext(), "PROCESS START", Toast.LENGTH_SHORT).show();
 
         stripe.createToken(
                 card,
                 new ApiResultCallback<Token>() {
                     public void onSuccess(@NonNull Token token) {
                         // send token ID to your server, you'll create a charge next
-                        Toast.makeText(getApplicationContext(), "Token created: " + token.getId(), Toast.LENGTH_LONG).show();
+                        //Toast.makeText(getApplicationContext(), "Token created: " + token.getId(), Toast.LENGTH_SHORT).show();
                         tok = token;
                         new StripeCharge(token.getId()).execute();
                     }
@@ -97,9 +119,35 @@ public class StripeActivity extends Activity {
                     @Override
                     public void onError(@NotNull Exception e) {
                         Log.d("Stripe", e.getLocalizedMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                enableBreaks();
+                            }
+                        });
+
+                        Toast.makeText(getApplicationContext(), "Error: Payment Information Error", Toast.LENGTH_LONG).show();
                     }
                 }
         );
+    }
+
+    public void disableBreaks(){
+        submitButton.setEnabled(false);
+        shouldAllowBack = false;
+    }
+
+    public void enableBreaks(){
+        submitButton.setEnabled(true);
+        shouldAllowBack = true;
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!shouldAllowBack) {
+        } else {
+            super.onBackPressed();
+        }
     }
 
     public class StripeCharge extends AsyncTask<String, Void, String> {
@@ -178,7 +226,7 @@ public class StripeActivity extends Activity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        submitButton.setEnabled(true);
+                        enableBreaks();
                     }
                 });
 

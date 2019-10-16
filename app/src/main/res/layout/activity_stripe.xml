@@ -1,82 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.thawk.tickethawk.StripeActivity">
 
-    <RelativeLayout
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_margin="20dp">
+        android:gravity="end"
+        android:text="Please do not pause or exit the application while processing your payment details."
+        app:layout_constraintEnd_toEndOf="@+id/relativeLayout"
+        app:layout_constraintStart_toStartOf="@+id/relativeLayout"
+        app:layout_constraintTop_toBottomOf="@+id/relativeLayout" />
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
 
         <EditText
+            android:id="@+id/cardNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/cardNumber"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:text="4242 4242 4242 4242" />
+            android:layout_alignParentRight="true"
+            android:digits="0123456789 _"
+            android:hint="4242 4242 4242 4242"
+            android:inputType="number"
+            android:maxLength="19" />
 
         <EditText
-            android:layout_width="30dp"
-            android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
             android:id="@+id/month"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/cardNumber"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:text="12" />
+            android:layout_alignParentLeft="true"
+            android:digits="0123456789"
+            android:ems="10"
+            android:hint="MM"
+            android:inputType="number"
+
+            android:maxLength="2" />
 
         <EditText
+            android:id="@+id/year"
             android:layout_width="30dp"
             android:layout_height="wrap_content"
-            android:inputType="number"
-            android:ems="10"
-            android:id="@+id/year"
-            android:text="19"
             android:layout_below="@+id/cardNumber"
+            android:layout_toEndOf="@+id/textView"
             android:layout_toRightOf="@+id/textView"
-            android:layout_toEndOf="@+id/textView" />
+            android:digits="0123456789"
+            android:ems="10"
+            android:hint="YY"
+            android:inputType="number"
+            android:maxLength="2" />
 
         <TextView
+            android:id="@+id/textView"
             android:layout_width="wrap_content"
             android:layout_height="36dp"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="/"
-            android:id="@+id/textView"
             android:layout_alignBottom="@+id/month"
+            android:layout_toEndOf="@+id/month"
             android:layout_toRightOf="@+id/month"
-            android:layout_toEndOf="@+id/month" />
+            android:text="/"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <EditText
+            android:id="@+id/cvc"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/cvc"
-            android:text="123"
             android:layout_below="@+id/cardNumber"
-            android:layout_toRightOf="@+id/year"
-            android:layout_toEndOf="@+id/year"
+            android:layout_marginStart="49dp"
             android:layout_marginLeft="49dp"
-            android:layout_marginStart="49dp" />
+            android:layout_toEndOf="@+id/year"
+            android:layout_toRightOf="@+id/year"
+            android:digits="0123456789"
+            android:hint="CVV"
+            android:maxLength="3" />
 
         <Button
+            android:id="@+id/submitButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Submit"
-            android:id="@+id/submitButton"
             android:layout_below="@+id/cvc"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:onClick="submitCard" />
+            android:layout_alignParentRight="true"
+            android:onClick="submitCard"
+            android:text="Submit" />
 
     </RelativeLayout>
 
-</RelativeLayout>
+    <TextView
+        android:id="@+id/textView9"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Card Information"
+        app:layout_constraintBottom_toTopOf="@+id/relativeLayout"
+        app:layout_constraintStart_toStartOf="@+id/relativeLayout" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
