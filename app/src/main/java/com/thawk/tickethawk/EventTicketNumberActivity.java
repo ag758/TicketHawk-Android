@@ -1,9 +1,12 @@
 package com.thawk.tickethawk;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -82,12 +85,83 @@ public class EventTicketNumberActivity extends Activity {
         confirmPurchase.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent i = new Intent(EventTicketNumberActivity.this, StripeActivity.class);
+                if (paymentTotalInt == 0){
+                    new AlertDialog.Builder((EventTicketNumberActivity.this))
+                            .setTitle("No Tickets")
+                            .setMessage("You haven't selected any tickets.")
 
-                // Put extras here
+                            // Specifying a listener allows you to take an action before dismissing the dialog.
+                            // The dialog is automatically dismissed when a dialog button is clicked.
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Continue with delete operation
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                    return;
+                }
+
+                ref.child("vendors").child(vendorID).child("events").child(eventId).addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        int going = 0;
+                        int maxIndivCapacity = Integer.MAX_VALUE;
+                        int maxTotalCapacity = Integer.MAX_VALUE;
+
+                        DataSnapshot maxIndivCapacityDS = dataSnapshot.child("maxTickets");
+                        DataSnapshot goingDS = dataSnapshot.child("going");
+                        DataSnapshot maxTotalCapacityDS = dataSnapshot.child("totalVenueCapacity");
+
+                        Log.i("purchase_info", String.valueOf(maxIndivCapacity));
+                        Log.i("purchase_info", String.valueOf(purchaseQuantity));
+
+                        if (maxIndivCapacityDS.getValue() != null){
+                            maxIndivCapacity = ((Long)maxIndivCapacityDS.getValue()).intValue();
+                        }
+
+                        if (purchaseQuantity > maxIndivCapacity){
+
+                            new AlertDialog.Builder((EventTicketNumberActivity.this))
+                                    .setTitle("Exceeds Individual Order Amount")
+                                    .setMessage("The Vendor has set a limit of " + String.valueOf(maxIndivCapacity) + " tickets.")
+
+                                    // Specifying a listener allows you to take an action before dismissing the dialog.
+                                    // The dialog is automatically dismissed when a dialog button is clicked.
+                                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            // Continue with delete operation
+                                        }
+                                    })
+                                    .setIcon(android.R.drawable.ic_dialog_alert)
+                                    .show();
 
 
-                startActivity(i);
+                        } else {
+
+
+                            Intent i = new Intent(EventTicketNumberActivity.this, StripeActivity.class);
+
+                            // Put extras here
+                            i.putExtra("map", map);
+
+                            i.putExtra("amount", paymentTotalInt);
+
+
+                            startActivity(i);
+
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    }
+                });
+
+
+
+
             }
         });
 

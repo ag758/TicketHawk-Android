@@ -59,6 +59,8 @@ public class StripeActivity extends AppCompatActivity {
 
     StripeActivity sA;
 
+    HashMap<String, Object> map;
+
     boolean shouldAllowBack = true;
 
     @Override
@@ -66,7 +68,7 @@ public class StripeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stripe);
 
-        amount = 1000;
+        amount = getIntent().getIntExtra("amount", 0);
         name = "TicketHawk";
 
         stripe = new Stripe(this, getResources().getString(R.string.publishableKey));
