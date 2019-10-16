@@ -1,6 +1,9 @@
 package com.thawk.tickethawk;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -13,8 +16,16 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.database.connection.ConnectionAuthTokenProvider;
 import com.stripe.android.ApiResultCallback;
 import com.stripe.android.Stripe;
@@ -60,16 +71,33 @@ public class StripeActivity extends AppCompatActivity {
     StripeActivity sA;
 
     HashMap<String, Object> map;
+    int purchaseQuantity;
+
+    int purchaseTotalWithTax, purchaseTotalWithoutTax;
+
+    String vendorID, eventID;
+
+    DatabaseReference ref;
 
     boolean shouldAllowBack = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ref = FirebaseDatabase.getInstance().getReference();
         setContentView(R.layout.activity_stripe);
 
         amount = getIntent().getIntExtra("amount", 0);
+        purchaseQuantity = getIntent().getIntExtra("purchaseQuantity", 0);
+        map = (HashMap<String,Object>)getIntent().getSerializableExtra("map");
         name = "TicketHawk";
+
+        eventID = getIntent().getStringExtra("eventID");
+        vendorID = getIntent().getStringExtra("vendorID");
+
+        purchaseTotalWithoutTax = getIntent().getIntExtra("withoutTax", 0);
+        purchaseTotalWithTax = getIntent().getIntExtra("withTax", 0);
 
         stripe = new Stripe(this, getResources().getString(R.string.publishableKey));
         submitButton = (Button)findViewById(R.id.submitButton);
@@ -86,7 +114,125 @@ public class StripeActivity extends AppCompatActivity {
 
     public void submitCard(View v){
 
+
+        //Check for total venue capacity
+
+        ref.child("vendors").child(vendorID).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                int going = 0;
+                int maxIndivCapacity = Integer.MAX_VALUE;
+                int maxTotalCapacity = Integer.MAX_VALUE;
+
+                DataSnapshot maxIndivCapacityDS = dataSnapshot.child("maxTickets");
+                DataSnapshot goingDS = dataSnapshot.child("going");
+                DataSnapshot maxTotalCapacityDS = dataSnapshot.child("totalVenueCapacity");
+
+                if (maxTotalCapacityDS.getValue() != null) {
+                    maxTotalCapacity = ((Long) maxTotalCapacityDS.getValue()).intValue();
+                }
+
+                if (goingDS.getValue() != null){
+                    going = ((Long) goingDS.getValue()).intValue();
+                }
+
+                Log.i("purchase_info", String.valueOf(purchaseQuantity + going));
+                Log.i("purchase_info", String.valueOf(maxTotalCapacity));
+
+                if (purchaseQuantity + going > maxTotalCapacity) {
+                    new AlertDialog.Builder((StripeActivity.this))
+                            .setTitle("Capacity Error")
+                            .setMessage("There are " + String.valueOf(maxTotalCapacity - going) + " tickets available for purchase remaining. Please change your order and try again.")
+
+                            // Specifying a listener allows you to take an action before dismissing the dialog.
+                            // The dialog is automatically dismissed when a dialog button is clicked.
+                            .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    // Continue with delete operation
+                                }
+                            })
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .show();
+                } else {
+                    submitCardContinue();
+                }
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    public void submitCardContinue(){
+
         disableBreaks();
+
+        //Run Transaction Blocks
+
+        DatabaseReference goingRef = ref.child("vendors").child(vendorID).child("events").child(eventID).child("going");
+        DatabaseReference grossSalesRef = ref.child("vendors").child(vendorID).child("events").child(eventID).child("grossSales");
+        DatabaseReference netSalesRef = ref.child("vendors").child(vendorID).child("events").child(eventID).child("netSales");
+
+        goingRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                int value;
+                if (mutableData.getValue() == null){
+                    value = 0;
+                } else {
+                    value = ((Long)mutableData.getValue()).intValue();
+                }
+                mutableData.setValue(value + purchaseQuantity);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+            }
+        });
+        grossSalesRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                int value;
+                if (mutableData.getValue() == null){
+                    value = 0;
+                } else {
+                    value = ((Long)mutableData.getValue()).intValue();
+                }
+                mutableData.setValue(value + purchaseTotalWithTax);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+            }
+        });
+        netSalesRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                int value;
+                if (mutableData.getValue() == null){
+                    value = 0;
+                } else {
+                    value = ((Long)mutableData.getValue()).intValue();
+                }
+                mutableData.setValue(value + purchaseTotalWithoutTax);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+            }
+        });
 
         //Formatting
         if (monthField.length() < 2){

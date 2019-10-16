@@ -113,12 +113,14 @@ public class EventTicketNumberActivity extends Activity {
                         DataSnapshot goingDS = dataSnapshot.child("going");
                         DataSnapshot maxTotalCapacityDS = dataSnapshot.child("totalVenueCapacity");
 
-                        Log.i("purchase_info", String.valueOf(maxIndivCapacity));
-                        Log.i("purchase_info", String.valueOf(purchaseQuantity));
-
                         if (maxIndivCapacityDS.getValue() != null){
                             maxIndivCapacity = ((Long)maxIndivCapacityDS.getValue()).intValue();
                         }
+
+                        Log.i("purchase_info", String.valueOf(maxIndivCapacity));
+                        Log.i("purchase_info", String.valueOf(purchaseQuantity));
+
+
 
                         if (purchaseQuantity > maxIndivCapacity){
 
@@ -145,7 +147,15 @@ public class EventTicketNumberActivity extends Activity {
                             // Put extras here
                             i.putExtra("map", map);
 
+                            i.putExtra("purchaseQuantity", purchaseQuantity);
+
                             i.putExtra("amount", paymentTotalInt);
+
+                            i.putExtra("vendorID", vendorID);
+                            i.putExtra("eventID", eventId);
+
+                            i.putExtra("withTax", paymentTotalInt);
+                            i.putExtra("withoutTax", paymentTotalWithoutTaxInt);
 
 
                             startActivity(i);
