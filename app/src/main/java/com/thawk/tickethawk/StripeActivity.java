@@ -364,6 +364,20 @@ public class StripeActivity extends AppCompatActivity {
 
                 if (data.contains("Success")){
                     //Success
+
+                    Intent i = new Intent(StripeActivity.this, CustomerTicketGeneration.class);
+
+                    i.putExtra("map", map);
+                    i.putExtra("vendorID", vendorID);
+                    i.putExtra("eventID", eventID);
+
+                    startActivity(i);
+
+
+
+
+
+
                 } else {
 
                 }
