@@ -30,6 +30,8 @@ public class CustomerTicketGeneration extends Activity {
     String vendorID = "";
     String eventID = "";
 
+    int addedTickets = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -41,6 +43,8 @@ public class CustomerTicketGeneration extends Activity {
         eventID = getIntent().getStringExtra("eventID");
 
         setContentView(R.layout.activity_ticket_generation);
+
+
 
         ref.child("vendors").child(vendorID).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -90,19 +94,30 @@ public class CustomerTicketGeneration extends Activity {
                         ticket.put("ticketType", e.getKey().name);
                         ticket.put("key", key);
 
-                        ref.child("vendors").child(vendorID).child("events").child(eventID).child("activeTickets").child("key").setValue(ticket, new DatabaseReference.CompletionListener() {
+                        ref.child("vendors").child(vendorID).child("events").child(eventID).child("activeTickets").child(key).setValue(ticket, new DatabaseReference.CompletionListener() {
                             @Override
                             public void onComplete(DatabaseError firebaseError, DatabaseReference ref) {
                                 if (firebaseError != null) {
 
                                 } else {
+                                    addedTickets++;
+                                    determineIfFinished(addedTickets);
 
                                 }
                             }
                         });
-                        }
-                        ref.child("customers").child(FirebaseAuth.getInstance().getUid()).child("activeTickets").child("key").setValue(ticket);
 
+                        ref.child("customers").child(FirebaseAuth.getInstance().getUid()).child("activeTickets").child(key).setValue(ticket, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError firebaseError, DatabaseReference ref) {
+                                if (firebaseError != null) {
+
+                                } else {
+                                    addedTickets++;
+                                    determineIfFinished(addedTickets);
+                                }
+                            }
+                        });
                         countdown--;
                     }
 
