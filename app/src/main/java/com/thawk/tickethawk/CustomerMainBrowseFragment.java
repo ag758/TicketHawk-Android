@@ -299,6 +299,8 @@ public class CustomerMainBrowseFragment extends Fragment {
                 String startDateAndTime = (String)eventSnapshot.child("startDateAndTime").getValue();
                 String pictureURL = (String)eventSnapshot.child("pictureURL").getValue();
 
+                String unformatted = startDateAndTime;
+
 
                 Log.i("debug_main_cust", "start");
 
@@ -342,7 +344,7 @@ public class CustomerMainBrowseFragment extends Fragment {
                 NumberFormat formatter = NumberFormat.getCurrencyInstance();
                 String number = formatter.format(minimumprice);
 
-                Event eventInstance = new Event(title, startDateAndTime, number, pictureURL, id, vendorID, vendorName);
+                Event eventInstance = new Event(title, startDateAndTime, number, pictureURL, id, vendorID, vendorName, unformatted);
 
                 Date endDate = new Date();
                 try {

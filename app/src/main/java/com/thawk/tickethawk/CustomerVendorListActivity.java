@@ -132,6 +132,8 @@ public class CustomerVendorListActivity extends Activity {
                     String startDateAndTime = (String)event.child("startDateAndTime").getValue();
                     String pictureURL = (String)event.child("pictureURL").getValue();
 
+                    String unformatted = startDateAndTime;
+
                     HashMap<String, Double> ticketTypes = new HashMap<>();
 
                     for (DataSnapshot d : event.child("ticketTypes").getChildren()){
@@ -167,7 +169,7 @@ public class CustomerVendorListActivity extends Activity {
                     NumberFormat formatter = NumberFormat.getCurrencyInstance();
                     String number = formatter.format(minimumprice);
 
-                    Event eventInstance = new Event(title, startDateAndTime, number, pictureURL, k, vendorID, ownName);
+                    Event eventInstance = new Event(title, startDateAndTime, number, pictureURL, k, vendorID, ownName, unformatted);
                     if (d1.after(new Date())){
                         (CustomerVendorListActivity.this).loadedEvents.add(eventInstance);
                         loadedEvents = sortByTime(loadedEvents);

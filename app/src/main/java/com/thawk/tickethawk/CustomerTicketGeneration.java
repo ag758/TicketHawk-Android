@@ -44,6 +44,13 @@ public class CustomerTicketGeneration extends Activity {
 
         setContentView(R.layout.activity_ticket_generation);
 
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();
+
+
 
 
         ref.child("vendors").child(vendorID).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -65,7 +72,7 @@ public class CustomerTicketGeneration extends Activity {
                 } catch (Exception e) {
 
                 }
-                SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("MMM d, h:mm a", Locale.US);
+                SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("MM-dd-yyyy h:mm a", Locale.US);
                 try {
                     dateAndTime = simpleDateFormat2.format(d1);
                 } catch (Exception e) {
@@ -157,7 +164,7 @@ public class CustomerTicketGeneration extends Activity {
                             // Pop to main customer activity
 
                             Intent i = new Intent(CustomerTicketGeneration.this, CustomerMainActivity.class);
-                            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             startActivity(i);
                         }
                     })
