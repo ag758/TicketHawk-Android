@@ -6,10 +6,20 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+
+import com.google.firebase.FirebaseError;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class CustomerTicketGeneration extends Activity {
@@ -31,6 +41,81 @@ public class CustomerTicketGeneration extends Activity {
         eventID = getIntent().getStringExtra("eventID");
 
         setContentView(R.layout.activity_ticket_generation);
+
+        ref.child("vendors").child(vendorID).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (!dataSnapshot.exists()){
+                    return;
+                }
+
+                String eventTitle = (String)dataSnapshot.child("eventTitle").getValue();
+
+                String dateAndTime = (String)dataSnapshot.child("startDateAndTime").getValue();
+
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+                Date d1 = new Date();
+                try {
+                    d1 = simpleDateFormat.parse(dateAndTime);
+                } catch (Exception e) {
+
+                }
+                SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("MMM d, h:mm a", Locale.US);
+                try {
+                    dateAndTime = simpleDateFormat2.format(d1);
+                } catch (Exception e) {
+
+                }
+
+                String location = (String)dataSnapshot.child("location").getValue();
+                String dressCodeString = (String)dataSnapshot.child("dressCode").getValue();
+
+                String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+
+                for (Map.Entry<TicketType, Object> e : map.entrySet()){
+
+                    int countdown = (int)e.getValue();
+
+                    while (countdown != 0){
+
+                        String key = ref.child("vendors").child(vendorID).child("events").child(eventID).child("activeTickets").push().getKey();
+
+                        HashMap<String, Object> ticket = new HashMap<>();
+
+                        ticket.put("userName", userName);
+                        ticket.put("title", eventTitle);
+                        ticket.put("dateAndTime", dateAndTime);
+                        ticket.put("location", location);
+                        ticket.put("ticketType", e.getKey().name);
+                        ticket.put("key", key);
+
+                        ref.child("vendors").child(vendorID).child("events").child(eventID).child("activeTickets").child("key").setValue(ticket, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError firebaseError, DatabaseReference ref) {
+                                if (firebaseError != null) {
+
+                                } else {
+
+                                }
+                            }
+                        });
+                        }
+                        ref.child("customers").child(FirebaseAuth.getInstance().getUid()).child("activeTickets").child("key").setValue(ticket);
+
+                        countdown--;
+                    }
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
