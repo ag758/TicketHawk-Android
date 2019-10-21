@@ -1,14 +1,16 @@
 package com.thawk.tickethawk;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,56 +20,49 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.thawk.tickethawk.RecyclerClasses.TicketAdapter;
-import com.thawk.tickethawk.RecyclerClasses.VendorAdapter;
+import com.thawk.tickethawk.RecyclerClasses.ArchiveAdapter;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-public class CustomerMainTicketFragment extends Fragment {
+public class CustomerArchiveTicketActivity extends Activity {
 
-    DatabaseReference ref;
+    public static DatabaseReference ref;
 
-    ArrayList<Ticket> tickets = new ArrayList<>();
+    RecyclerView archiveRecyclerView;
+    RecyclerView.Adapter mArchiveRecyclerViewAdapter;
+    RecyclerView.LayoutManager mArchiveLayoutManager;
 
-    RecyclerView ticketView;
-    RecyclerView.Adapter mTicketAdapter;
-    RecyclerView.LayoutManager mTicketLayoutManager;
+    ArrayList<Ticket> archivedTickets = new ArrayList<>();
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup parent, Bundle savedInstanceState) {
-        // Defines the xml file for the fragment
-
-        View v = inflater.inflate(R.layout.fragment_ticket, parent, false);
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
 
         ref = FirebaseDatabase.getInstance().getReference();
+        setContentView(R.layout.activity_archivetickets);
 
-        findViews(v);
-
+        findViews();
         loadTickets();
-
-
-        return v;
     }
 
-    public void findViews(View v){
-        ticketView = v.findViewById(R.id.ticketRecyclerView);
+    public void findViews(){
+        archiveRecyclerView = findViewById(R.id.archive_recyclerview);
+        mArchiveRecyclerViewAdapter = new ArchiveAdapter(archivedTickets, this);
+        mArchiveLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
-        mTicketAdapter = new TicketAdapter(tickets, getContext(), getActivity());
-        mTicketLayoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false);
-
-        ticketView.setAdapter(mTicketAdapter);
-        ticketView.setLayoutManager(mTicketLayoutManager);
+        archiveRecyclerView.setAdapter(mArchiveRecyclerViewAdapter);
+        archiveRecyclerView.setLayoutManager(mArchiveLayoutManager);
     }
 
     public void loadTickets(){
-        Log.i("ticket_info", String.valueOf(tickets.size()));
-        tickets.removeAll(tickets);
+        Log.i("ticket_info", String.valueOf(archivedTickets.size()));
+        archivedTickets.removeAll(archivedTickets);
         //tickets = new ArrayList<>();
 
-        DatabaseReference query = ref.child("customers").child(FirebaseAuth.getInstance().getUid()).child("activeTickets");
+        DatabaseReference query = ref.child("customers").child(FirebaseAuth.getInstance().getUid()).child("archivedTickets");
 
         query.addChildEventListener(new ChildEventListener() {
             @Override
@@ -85,7 +80,7 @@ public class CustomerMainTicketFragment extends Fragment {
                 Log.i("ticket_info", "one added");
                 //notify recycler view
 
-                mTicketAdapter.notifyDataSetChanged();
+                mArchiveRecyclerViewAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -95,18 +90,17 @@ public class CustomerMainTicketFragment extends Fragment {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
                 String key = (String)dataSnapshot.child("key").getValue();
 
-
                 ArrayList<Ticket> toBeRemoved = new ArrayList<>();
-                for (Ticket t : tickets){
+                for (Ticket t : archivedTickets){
                     if (t.key.equals(key)) {
                         toBeRemoved.add(t);
                     }
                 }
-                tickets.removeAll(toBeRemoved);
-
-                mTicketAdapter.notifyDataSetChanged();
+                archivedTickets.removeAll(toBeRemoved);
+                mArchiveRecyclerViewAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -119,21 +113,20 @@ public class CustomerMainTicketFragment extends Fragment {
 
             }
         });
-
     }
 
     public void appendAfterDate(Ticket t){
         int index = 0;
-        while (index < tickets.size()){
+        while (index < archivedTickets.size()){
 
-            if (compareDates(tickets.get(index).dateAndTime, t.dateAndTime)){
+            if (compareDates(archivedTickets.get(index).dateAndTime, t.dateAndTime)){
                 index++;
             } else {
                 break;
             }
 
         }
-        tickets.add(index, t);
+        archivedTickets.add(index, t);
     }
 
     boolean compareDates(String date1, String date2){

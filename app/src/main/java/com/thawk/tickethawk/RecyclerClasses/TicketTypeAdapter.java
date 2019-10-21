@@ -1,10 +1,13 @@
 package com.thawk.tickethawk.RecyclerClasses;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +18,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.ValueEventListener;
 import com.squareup.picasso.Picasso;
 import com.thawk.tickethawk.BaseClasses.Vendor;
 import com.thawk.tickethawk.CustomerMainActivity;
@@ -30,6 +38,7 @@ public class TicketTypeAdapter extends RecyclerView.Adapter<TicketTypeAdapter.My
 
     public ArrayList<TicketType> mDataset = new ArrayList<>();
     private Context mContext;
+
 
 
     public TicketTypeAdapter(ArrayList<TicketType> dataset, Context context){
@@ -69,6 +78,7 @@ public class TicketTypeAdapter extends RecyclerView.Adapter<TicketTypeAdapter.My
 
     @Override
     public void onBindViewHolder(final @NonNull TicketTypeAdapter.MyViewHolder myViewHolder, final int position) {
+
 
         myViewHolder.ticketName.setText(mDataset.get(position).name);
 

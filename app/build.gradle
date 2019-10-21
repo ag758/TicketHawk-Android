@@ -7,7 +7,7 @@ android {
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.example.tickethawk"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         multiDexEnabled true
         versionCode 1

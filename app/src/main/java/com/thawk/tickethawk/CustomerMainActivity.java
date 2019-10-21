@@ -8,8 +8,10 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.Window;
 import android.widget.FrameLayout;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -32,6 +34,8 @@ public class CustomerMainActivity extends FragmentActivity {
     CustomerMainTicketFragment fMTF;
 
     BottomNavigationView bNV;
+
+    ImageButton archiveButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +61,16 @@ public class CustomerMainActivity extends FragmentActivity {
     void findViews(){
         bNV = findViewById(R.id.bottomNavigationView);
         fl = findViewById(R.id.frame_layout);
+        archiveButton = findViewById(R.id.archive_button);
+        archiveButton.setVisibility(View.INVISIBLE);
+
+        archiveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(CustomerMainActivity.this, CustomerArchiveTicketActivity.class);
+                startActivity(i);
+            }
+        });
     }
 
     public void replaceFragment(Fragment f){
@@ -81,16 +95,19 @@ public class CustomerMainActivity extends FragmentActivity {
                         Log.i("menu", "search");
                         replaceFragment(fMBF);
                         fl.setLayoutParams(new ConstraintLayout.LayoutParams(width,(int)(height * 1.2)));
+                        archiveButton.setVisibility(View.INVISIBLE);
                         break;
                     case R.id.menu_tickets:
                         Log.i("menu", "tickets");
                         replaceFragment(fMTF);
+                        archiveButton.setVisibility(View.VISIBLE);
                         fl.setLayoutParams(new ConstraintLayout.LayoutParams(width,(int)(height) - bNV.getMeasuredHeight() - 60));
                         break;
                     case R.id.menu_account:
                         Log.i("menu", "account");
                         replaceFragment(fMAF);
                         fl.setLayoutParams(new ConstraintLayout.LayoutParams(width,(int)(height) - bNV.getMeasuredHeight() - 60));
+                        archiveButton.setVisibility(View.INVISIBLE);
                         break;
                     default:
                         break;
