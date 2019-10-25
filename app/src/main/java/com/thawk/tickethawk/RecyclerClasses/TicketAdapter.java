@@ -152,9 +152,9 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.MyViewHold
             }
         });
 
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
+
+
+
 
                 myViewHolder.titleView.setText(mDataset.get(position).eventTitle);
                 myViewHolder.locationView.setText(mDataset.get(position).location);
@@ -164,6 +164,9 @@ public class TicketAdapter extends RecyclerView.Adapter<TicketAdapter.MyViewHold
 
                 myViewHolder.nameView.setText(mDataset.get(position).userName);
 
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
                 try {
                     QRCodeWriter writer = new QRCodeWriter();
                     BitMatrix matrix = null;

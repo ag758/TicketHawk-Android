@@ -37,6 +37,19 @@ public class CustomerActivity1 extends Activity {
         checkLoggedIn();
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user!=null){
+            Log.i("userstatus", "nonnull");
+            customerLogin();
+        }
+
+    }
+
+
     void checkLoggedIn(){
 
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
