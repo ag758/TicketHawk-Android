@@ -6,6 +6,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:background="@drawable/filled_rounded_rec_grey"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/communityButton" />
+
     <Button
         android:id="@+id/communityButton"
         android:layout_width="0dp"
@@ -18,7 +30,7 @@
         android:paddingStart="20dp"
         android:gravity="center_vertical"
         style="@style/rounded_rec_button"
-        android:background="@color/darkGray"
+        android:background="@android:color/transparent"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +48,7 @@
         android:paddingStart="20dp"
         android:gravity="center_vertical"
         style="@style/rounded_rec_button"
-        android:background="@color/darkGray"
+        android:background="@android:color/transparent"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -55,10 +67,11 @@
         android:paddingStart="20dp"
         android:gravity="center_vertical"
         style="@style/rounded_rec_button"
-        android:background="@color/darkGray"
+        android:background="@android:color/transparent"
 
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/accountButton" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
