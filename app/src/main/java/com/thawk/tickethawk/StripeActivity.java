@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -66,6 +67,8 @@ public class StripeActivity extends AppCompatActivity {
 
     EditText cardNumberField, monthField, yearField;
 
+    ProgressBar pB;
+
     public String pKey;
 
     StripeActivity sA;
@@ -107,6 +110,10 @@ public class StripeActivity extends AppCompatActivity {
 
         monthField = (EditText) findViewById(R.id.month);
         yearField = (EditText) findViewById(R.id.year);
+
+        pB = findViewById(R.id.paymentProgress);
+
+        pB.setVisibility(View.INVISIBLE);
 
         //monthField.addTextChangedListener(new TwoDigitFormatWatcher());
         //yearField.addTextChangedListener(new TwoDigitFormatWatcher());
@@ -281,11 +288,13 @@ public class StripeActivity extends AppCompatActivity {
     }
 
     public void disableBreaks(){
+        pB.setVisibility(View.VISIBLE);
         submitButton.setEnabled(false);
         shouldAllowBack = false;
     }
 
     public void enableBreaks(){
+        pB.setVisibility(View.INVISIBLE);
         submitButton.setEnabled(true);
         shouldAllowBack = true;
     }

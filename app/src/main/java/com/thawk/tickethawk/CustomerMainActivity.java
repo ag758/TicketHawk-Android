@@ -58,6 +58,13 @@ public class CustomerMainActivity extends FragmentActivity {
         fl.setLayoutParams(new ConstraintLayout.LayoutParams(width,(int)(height * 1.2)));
     }
 
+    @Override
+    protected void onResume(){
+        super.onResume();
+
+        //fMBF.loadCommunity();
+    }
+
     void findViews(){
         bNV = findViewById(R.id.bottomNavigationView);
         fl = findViewById(R.id.frame_layout);

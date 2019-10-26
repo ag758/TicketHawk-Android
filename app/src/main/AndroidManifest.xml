@@ -21,7 +21,9 @@
 
 
         <activity android:name="com.thawk.tickethawk.SplitMainActivity"
-            android:theme ="@style/splash">
+            android:theme ="@style/splash"
+            android:screenOrientation="portrait">
+
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,12 +32,14 @@
 
         </activity>
 
-        <activity android:name="com.thawk.tickethawk.CustomerActivity1">
+        <activity android:name="com.thawk.tickethawk.CustomerActivity1"
+            android:screenOrientation="portrait">
         </activity>
 
 
         <activity android:name="com.thawk.tickethawk.CustomerActivity2"
             android:windowSoftInputMode="stateVisible|adjustPan"
+            android:screenOrientation="portrait"
            >
         </activity>
 
@@ -43,39 +47,48 @@
             android:theme ="@style/splash"
             android:windowSoftInputMode="stateVisible|adjustPan"
             android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             >
         </activity>
 
-        <activity android:name="com.thawk.tickethawk.CustomerVendorListActivity">
+        <activity android:name="com.thawk.tickethawk.CustomerVendorListActivity"
+            android:screenOrientation="portrait">
         </activity>
 
-        <activity android:name="com.thawk.tickethawk.EventActivity">
+        <activity android:name="com.thawk.tickethawk.EventActivity"
+            android:screenOrientation="portrait">
         </activity>
 
-        <activity android:name="com.thawk.tickethawk.EventTicketNumberActivity">
+        <activity android:name="com.thawk.tickethawk.EventTicketNumberActivity"
+            android:screenOrientation="portrait">
         </activity>
 
-        <activity android:name="com.thawk.tickethawk.StripeActivity">
-
-
-        </activity>
-
-        <activity android:name="com.thawk.tickethawk.CustomerTicketGeneration">
-
-
-        </activity>
-
-        <activity android:name="com.thawk.tickethawk.CustomerArchiveTicketActivity">
+        <activity android:name="com.thawk.tickethawk.StripeActivity"
+            android:screenOrientation="portrait">
 
 
         </activity>
 
-        <activity android:name="com.thawk.tickethawk.CommunityEditActivity">
+        <activity android:name="com.thawk.tickethawk.CustomerTicketGeneration"
+            android:screenOrientation="portrait">
 
 
         </activity>
 
-        <activity android:name="com.thawk.tickethawk.AccountInfoActivity">
+        <activity android:name="com.thawk.tickethawk.CustomerArchiveTicketActivity"
+            android:screenOrientation="portrait">
+
+
+        </activity>
+
+        <activity android:name="com.thawk.tickethawk.CommunityEditActivity"
+            android:screenOrientation="portrait">
+
+
+        </activity>
+
+        <activity android:name="com.thawk.tickethawk.AccountInfoActivity"
+            android:screenOrientation="portrait">
 
 
         </activity>

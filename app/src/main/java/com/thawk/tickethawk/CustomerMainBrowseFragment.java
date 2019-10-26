@@ -1,5 +1,9 @@
 package com.thawk.tickethawk;
 
+import android.content.Intent;
+import android.graphics.ColorFilter;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.renderscript.Sampler;
 import android.text.Editable;
@@ -14,6 +18,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -104,6 +109,12 @@ public class CustomerMainBrowseFragment extends Fragment {
         super.onResume();
         searchText.setText("");
         setFiltered(searchText.getText().toString());
+        loadCommunity();
+
+        Drawable drawable = getResources().getDrawable(R.drawable.icons8_search_24);
+        drawable.setTint(getResources().getColor(R.color.white));
+
+        searchText.setCompoundDrawablesWithIntrinsicBounds(drawable, null, null, null);
     }
 
     @Override
@@ -111,7 +122,7 @@ public class CustomerMainBrowseFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         findViews(view);
-        loadCommunity();
+
 
 
         setFiltered(searchText.getText().toString());
@@ -132,6 +143,7 @@ public class CustomerMainBrowseFragment extends Fragment {
 
             }
         });
+
 
     }
 
@@ -157,10 +169,21 @@ public class CustomerMainBrowseFragment extends Fragment {
                 DividerItemDecoration.HORIZONTAL);
         eventsRecyclerView.addItemDecoration(dividerItemDecoration);
 
+        communityTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent i = new Intent(getActivity(), CommunityEditActivity.class);
+                startActivity(i);
+            }
+        });
+
     }
 
     void loadCommunity(){
 
+        loadedEvents.removeAll(loadedEvents);
+        loadedEventsStringIDs.removeAll(loadedEventsStringIDs);
+        vendors.removeAll(vendors);
 
         String userID = FirebaseAuth.getInstance().getUid();
         ref.child("customers").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {

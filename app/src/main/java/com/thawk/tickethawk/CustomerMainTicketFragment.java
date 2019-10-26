@@ -80,7 +80,17 @@ public class CustomerMainTicketFragment extends Fragment {
                 String location = (String)dataSnapshot.child("location").getValue();
 
                 Ticket t = new Ticket(key, eventTitle, ticketType, userName, dateAndTime, location);
-                appendAfterDate(t);
+
+                boolean isAlreadyAdded = false;
+                for (Ticket tik: tickets){
+                    if (tik.key.equals(key)){
+                        isAlreadyAdded = true;
+                    }
+                }
+                if (!isAlreadyAdded){
+                    appendAfterDate(t);
+
+                }
 
                 Log.i("ticket_info", "one added");
                 //notify recycler view
