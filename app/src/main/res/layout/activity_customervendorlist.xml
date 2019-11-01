@@ -63,7 +63,7 @@
     <ImageView
         android:id="@+id/vendor_image_heading"
         android:layout_width="0dp"
-        android:layout_height="130dp"
+        android:layout_height="100dp"
         android:scaleType="centerCrop"
         android:src="@android:color/transparent"
         app:layout_constraintEnd_toEndOf="parent"

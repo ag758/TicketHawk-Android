@@ -24,6 +24,8 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class CustomerMainActivity extends FragmentActivity {
 
@@ -40,6 +42,16 @@ public class CustomerMainActivity extends FragmentActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Main Page loaded by default -- transitions to splitcontroller if user is null
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if(user==null){
+            Intent i = new Intent(this, SplitMainActivity.class);
+            startActivity(i);
+            return;
+        }
+
+        //
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
