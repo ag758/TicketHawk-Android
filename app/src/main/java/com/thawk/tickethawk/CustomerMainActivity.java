@@ -26,6 +26,11 @@ import androidx.fragment.app.FragmentTransaction;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class CustomerMainActivity extends FragmentActivity {
 
@@ -50,6 +55,28 @@ public class CustomerMainActivity extends FragmentActivity {
             startActivity(i);
             return;
         }
+        String userID = user.getUid();
+
+        DatabaseReference ref = FirebaseDatabase.getInstance().getReference();
+
+        ref.child("customers").child(userID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean didFinishProfile = (boolean)(dataSnapshot.child("didFinishSigningUp").getValue());
+
+                if (!didFinishProfile){
+                    FirebaseAuth.getInstance().signOut();
+                    Intent i = new Intent(CustomerMainActivity.this, SplitMainActivity.class);
+                    startActivity(i);
+                    return;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
 
         //
 

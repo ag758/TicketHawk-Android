@@ -42,9 +42,10 @@
 
         <activity android:name="com.thawk.tickethawk.CustomerMainActivity"
             android:theme ="@style/splash"
-            android:windowSoftInputMode="stateVisible|adjustPan"
+            android:windowSoftInputMode="stateVisible|adjustPan|stateHidden"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
+
             >
 
             <intent-filter>
