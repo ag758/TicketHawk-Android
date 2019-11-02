@@ -46,7 +46,7 @@ public class CustomerActivity2 extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ref = SplitMainActivity.ref;
+        ref = Constants.ref;
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_customeractivity2);

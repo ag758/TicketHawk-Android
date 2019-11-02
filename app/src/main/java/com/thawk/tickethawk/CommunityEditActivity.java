@@ -20,6 +20,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.thawk.tickethawk.RecyclerClasses.CommunityAdapter;
 import com.thawk.tickethawk.RecyclerClasses.CommunityAdapter2;
 
@@ -45,7 +46,7 @@ public class CommunityEditActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ref = SplitMainActivity.ref;
+        ref = FirebaseDatabase.getInstance().getReference();
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
