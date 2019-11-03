@@ -23,6 +23,9 @@ import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.internal.GoogleApiManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -48,8 +51,11 @@ public class CustomerMainActivity extends FragmentActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        //FirebaseAuth.getInstance().signOut();
+
         //Main Page loaded by default -- transitions to splitcontroller if user is null
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
         if(user==null){
             Intent i = new Intent(this, SplitMainActivity.class);
             startActivity(i);
@@ -69,6 +75,8 @@ public class CustomerMainActivity extends FragmentActivity {
                     Intent i = new Intent(CustomerMainActivity.this, SplitMainActivity.class);
                     startActivity(i);
                     return;
+                } else {
+                    onCreateContinue();
                 }
             }
 
@@ -77,6 +85,10 @@ public class CustomerMainActivity extends FragmentActivity {
 
             }
         });
+    }
+
+    void onCreateContinue(){
+
 
         //
 

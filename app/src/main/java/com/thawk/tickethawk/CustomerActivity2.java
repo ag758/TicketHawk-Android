@@ -20,6 +20,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.thawk.tickethawk.RecyclerClasses.CommunityAdapter;
 
 import java.util.ArrayList;
@@ -46,7 +47,7 @@ public class CustomerActivity2 extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ref = Constants.ref;
+        ref = FirebaseDatabase.getInstance().getReference();
 
         this.requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_customeractivity2);
