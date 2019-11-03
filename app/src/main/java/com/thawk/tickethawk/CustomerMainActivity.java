@@ -52,6 +52,7 @@ public class CustomerMainActivity extends FragmentActivity {
         super.onCreate(savedInstanceState);
 
         //FirebaseAuth.getInstance().signOut();
+        //Commit
 
         //Main Page loaded by default -- transitions to splitcontroller if user is null
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
