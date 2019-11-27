@@ -212,17 +212,18 @@ public class CustomerMainBrowseFragment extends Fragment {
                 for (DataSnapshot d : dataSnapshot.getChildren()){
                     final String k = d.getKey();
 
-                    //new Thread(new Runnable() {
-                        //public void run() {
-                            chooseEventFromVendor(k);
-                        //}
-                    //}).start();
 
-                    //new Thread(new Runnable() {
+                        //new Thread(new Runnable() {
                         //public void run() {
-                            loadCommunityVendorDetails(k);
+                        //chooseEventFromVendor(k);
                         //}
-                    //}).start();
+                        //}).start();
+
+                        //new Thread(new Runnable() {
+                        //public void run() {
+                        loadCommunityVendorDetails(k);
+                        //}
+                        //}).start();
 
 
                 }
@@ -401,14 +402,22 @@ public class CustomerMainBrowseFragment extends Fragment {
         ref.child("vendors").child(k).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                String orgName = (String)dataSnapshot.child("organizationName").getValue();
-                String pictureURL = (String)dataSnapshot.child("organizationProfileImage").getValue();
-                String ticketCategory = (String)dataSnapshot.child("ticketCategory").getValue();
-                Vendor vendorToBeAdded = new Vendor(k, orgName, pictureURL, ticketCategory);
 
-                vendors = randomAppend(vendors, vendorToBeAdded);
-                mVendorsAdapter.notifyDataSetChanged();
+                boolean didFinishSigningUp = (boolean)dataSnapshot.child("didFinishSigningUp").getValue();
 
+                if (didFinishSigningUp){
+
+                    chooseEventFromVendor(k);
+
+
+                    String orgName = (String)dataSnapshot.child("organizationName").getValue();
+                    String pictureURL = (String)dataSnapshot.child("organizationProfileImage").getValue();
+                    String ticketCategory = (String)dataSnapshot.child("ticketCategory").getValue();
+                    Vendor vendorToBeAdded = new Vendor(k, orgName, pictureURL, ticketCategory);
+
+                    vendors = randomAppend(vendors, vendorToBeAdded);
+                    mVendorsAdapter.notifyDataSetChanged();
+                }
             }
 
             @Override
