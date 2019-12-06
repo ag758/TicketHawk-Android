@@ -161,7 +161,7 @@ public class EventTicketNumberActivity extends Activity {
                                     i.putExtra("withTax", paymentTotalInt);
                                     i.putExtra("withoutTax", paymentTotalWithoutTaxInt);
 
-                                    i.putExtra("feeAmount", fees);
+                                    i.putExtra("feeAmount", paymentTotalInt - fees);
                                     i.putExtra("accountID", accountID);
 
 
