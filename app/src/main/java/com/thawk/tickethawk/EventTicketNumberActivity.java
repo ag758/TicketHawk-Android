@@ -141,25 +141,39 @@ public class EventTicketNumberActivity extends Activity {
 
                         } else {
 
+                            ref.child("vendors").child(vendorID).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    String accountID = (String)dataSnapshot.child("stripeAcctID").getValue();
 
-                            Intent i = new Intent(EventTicketNumberActivity.this, StripeActivity.class);
+                                    Intent i = new Intent(EventTicketNumberActivity.this, StripeActivity.class);
 
-                            // Put extras here
-                            i.putExtra("map", map);
+                                    // Put extras here
+                                    i.putExtra("map", map);
 
-                            i.putExtra("purchaseQuantity", purchaseQuantity);
+                                    i.putExtra("purchaseQuantity", purchaseQuantity);
 
-                            i.putExtra("amount", paymentTotalInt);
+                                    i.putExtra("amount", paymentTotalInt);
 
-                            i.putExtra("vendorID", vendorID);
-                            i.putExtra("eventID", eventId);
+                                    i.putExtra("vendorID", vendorID);
+                                    i.putExtra("eventID", eventId);
 
-                            i.putExtra("withTax", paymentTotalInt);
-                            i.putExtra("withoutTax", paymentTotalWithoutTaxInt);
+                                    i.putExtra("withTax", paymentTotalInt);
+                                    i.putExtra("withoutTax", paymentTotalWithoutTaxInt);
+
+                                    i.putExtra("feeAmount", fees);
+                                    i.putExtra("accountID", accountID);
 
 
-                            startActivity(i);
 
+                                    startActivity(i);
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                }
+                            });
                         }
                     }
 
@@ -168,10 +182,6 @@ public class EventTicketNumberActivity extends Activity {
 
                     }
                 });
-
-
-
-
             }
         });
 

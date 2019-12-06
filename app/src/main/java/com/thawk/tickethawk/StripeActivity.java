@@ -63,6 +63,9 @@ public class StripeActivity extends AppCompatActivity {
     Card card;
     Token tok;
 
+    Integer feeAmount;
+    String accountID;
+
     Button submitButton;
 
     EditText cardNumberField, monthField, yearField;
@@ -95,6 +98,9 @@ public class StripeActivity extends AppCompatActivity {
         purchaseQuantity = getIntent().getIntExtra("purchaseQuantity", 0);
         map = (HashMap<String,Object>)getIntent().getSerializableExtra("map");
         name = "TicketHawk";
+
+        feeAmount = getIntent().getIntExtra("feeAmount", 0);
+        accountID = getIntent().getStringExtra("accountID");
 
         eventID = getIntent().getStringExtra("eventID");
         vendorID = getIntent().getStringExtra("vendorID");
@@ -179,6 +185,56 @@ public class StripeActivity extends AppCompatActivity {
 
         //Run Transaction Blocks
 
+
+
+        //Formatting
+        if (monthField.length() < 2){
+            monthField.getEditableText().insert(0, "0");
+        }
+        if (yearField.length() > 2){
+            yearField.getEditableText().insert(0, "0");
+        }
+
+
+        TextView cvcField = (TextView) findViewById(R.id.cvc);
+
+        card = new Card.Builder(
+                cardNumberField.getText().toString(),
+                Integer.valueOf(monthField.getText().toString()),
+                Integer.valueOf(yearField.getText().toString()),
+                cvcField.getText().toString()
+        ).build();
+
+        //Toast.makeText(getApplicationContext(), "PROCESS START", Toast.LENGTH_SHORT).show();
+
+        stripe.createToken(
+                card,
+                new ApiResultCallback<Token>() {
+                    public void onSuccess(@NonNull Token token) {
+                        // send token ID to your server, you'll create a charge next
+                        //Toast.makeText(getApplicationContext(), "Token created: " + token.getId(), Toast.LENGTH_SHORT).show();
+                        tok = token;
+                        new StripeCharge(token.getId()).execute();
+                        runTransactionBlocks();
+                    }
+
+                    @Override
+                    public void onError(@NotNull Exception e) {
+                        Log.d("Stripe", e.getLocalizedMessage());
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                enableBreaks();
+                            }
+                        });
+
+                        Toast.makeText(getApplicationContext(), "Error: Payment Information Error", Toast.LENGTH_LONG).show();
+                    }
+                }
+        );
+    }
+
+    public void runTransactionBlocks(){
         DatabaseReference goingRef = ref.child("vendors").child(vendorID).child("events").child(eventID).child("going");
         DatabaseReference grossSalesRef = ref.child("vendors").child(vendorID).child("events").child(eventID).child("grossSales");
         DatabaseReference netSalesRef = ref.child("vendors").child(vendorID).child("events").child(eventID).child("netSales");
@@ -240,51 +296,6 @@ public class StripeActivity extends AppCompatActivity {
 
             }
         });
-
-        //Formatting
-        if (monthField.length() < 2){
-            monthField.getEditableText().insert(0, "0");
-        }
-        if (yearField.length() > 2){
-            yearField.getEditableText().insert(0, "0");
-        }
-
-
-        TextView cvcField = (TextView) findViewById(R.id.cvc);
-
-        card = new Card.Builder(
-                cardNumberField.getText().toString(),
-                Integer.valueOf(monthField.getText().toString()),
-                Integer.valueOf(yearField.getText().toString()),
-                cvcField.getText().toString()
-        ).build();
-
-        //Toast.makeText(getApplicationContext(), "PROCESS START", Toast.LENGTH_SHORT).show();
-
-        stripe.createToken(
-                card,
-                new ApiResultCallback<Token>() {
-                    public void onSuccess(@NonNull Token token) {
-                        // send token ID to your server, you'll create a charge next
-                        //Toast.makeText(getApplicationContext(), "Token created: " + token.getId(), Toast.LENGTH_SHORT).show();
-                        tok = token;
-                        new StripeCharge(token.getId()).execute();
-                    }
-
-                    @Override
-                    public void onError(@NotNull Exception e) {
-                        Log.d("Stripe", e.getLocalizedMessage());
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                enableBreaks();
-                            }
-                        });
-
-                        Toast.makeText(getApplicationContext(), "Error: Payment Information Error", Toast.LENGTH_LONG).show();
-                    }
-                }
-        );
     }
 
     public void disableBreaks(){
@@ -321,7 +332,7 @@ public class StripeActivity extends AppCompatActivity {
             new Thread() {
                 @Override
                 public void run() {
-                    postData(name, token, "" + amount);
+                    postData(name, token, "" + amount, accountID, "" + feeAmount);
                 }
             }.start();
             return data;
@@ -333,10 +344,10 @@ public class StripeActivity extends AppCompatActivity {
             Log.e("Result", s);
         }
 
-        public void postData(String description, String token, String amount) {
+        public void postData(String description, String token, String amount, String accountID, String feeAmount) {
             // Create a new HttpClient and Post Header
             try {
-                URL url = new URL(getResources().getString(R.string.baseURLString));
+                URL url = new URL(getResources().getString(R.string.baseURLString) + "charge");
                 conn = (HttpURLConnection) url.openConnection();
                 conn.setRequestMethod("POST");
                 conn.setDoInput(true);
@@ -347,31 +358,21 @@ public class StripeActivity extends AppCompatActivity {
                 List<NameValuePair> params = new ArrayList<NameValuePair>();
                 params.add(new BasicNameValuePair("method", "charge"));
                 params.add(new BasicNameValuePair("description", description));
-                params.add(new BasicNameValuePair("source", token));
+                params.add(new BasicNameValuePair("token", token));
                 params.add(new BasicNameValuePair("amount", amount));
                 params.add(new BasicNameValuePair("currency", "usd"));
+
+                params.add(new BasicNameValuePair("account_id", accountID));
+                params.add(new BasicNameValuePair("application_fee_amount", feeAmount));
 
                 DataOutputStream wr = new DataOutputStream(conn.getOutputStream());
                 wr.writeBytes(getQuery(params));
                 wr.flush();
                 wr.close();
 
-                InputStream in = conn.getInputStream();
-                InputStreamReader inputStreamReader = new InputStreamReader(in);
+                Log.i("responsecode", String.valueOf(conn.getResponseCode()));
 
-                int inputStreamData = inputStreamReader.read();
-                while (inputStreamData != -1) {
-                    char current = (char) inputStreamData;
-                    inputStreamData = inputStreamReader.read();
-                    Log.e("TAG", "hello2" + data);
-                    data += current;
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.e("TAG", "hello3");
-            } finally {
-
-                if (data.contains("Success")){
+                if (conn.getResponseCode() == 200){
                     //Success
 
                     Intent i = new Intent(StripeActivity.this, CustomerTicketGeneration.class);
@@ -381,12 +382,6 @@ public class StripeActivity extends AppCompatActivity {
                     i.putExtra("eventID", eventID);
 
                     startActivity(i);
-
-
-
-
-
-
                 } else {
 
                 }
@@ -400,6 +395,20 @@ public class StripeActivity extends AppCompatActivity {
                         enableBreaks();
                     }
                 });
+
+
+
+
+
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e("TAG", "hello3");
+            } finally {
+
+                Log.e("TAG", data.toString());
+
 
 
             }
