@@ -288,20 +288,24 @@ public class CustomerMainBrowseFragment extends Fragment {
 
                 int i = (int)(Math.random() * (keys.size()));
 
-                String eventId = keys.get(i);
+                if (!keys.isEmpty()){
 
-                boolean isAlreadyAdded = false;
+                    String eventId = keys.get(i);
 
-                for (String k : loadedEventsStringIDs){
-                    if (k.equals(eventId) ){
-                        isAlreadyAdded = true;
+                    boolean isAlreadyAdded = false;
+
+                    for (String k : loadedEventsStringIDs){
+                        if (k.equals(eventId) ){
+                            isAlreadyAdded = true;
+                        }
+                    }
+
+                    if (!isAlreadyAdded){
+                        loadedEventsStringIDs.add(eventId);
+                        loadEvent(k, eventId);
                     }
                 }
 
-                if (!isAlreadyAdded){
-                    loadedEventsStringIDs.add(eventId);
-                    loadEvent(k, eventId);
-                }
             }
 
             @Override
@@ -383,10 +387,10 @@ public class CustomerMainBrowseFragment extends Fragment {
 
                 Log.i("debug_amount", "events_size" + " " + String.valueOf(loadedEvents.size()));
 
-                loadedEvents = randomAppend(loadedEvents, eventInstance);
-
-                mEventsAdapter.notifyDataSetChanged();
-
+                if (endDate.after(new Date())){
+                    loadedEvents = randomAppend(loadedEvents, eventInstance);
+                    mEventsAdapter.notifyDataSetChanged();
+                }
                 Log.i("debug_amount", "events_size" + " " + String.valueOf(loadedEvents.size()));
             }
 

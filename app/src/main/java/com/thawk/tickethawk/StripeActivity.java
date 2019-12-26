@@ -215,7 +215,6 @@ public class StripeActivity extends AppCompatActivity {
                         //Toast.makeText(getApplicationContext(), "Token created: " + token.getId(), Toast.LENGTH_SHORT).show();
                         tok = token;
                         new StripeCharge(token.getId()).execute();
-                        runTransactionBlocks();
                     }
 
                     @Override
@@ -234,69 +233,7 @@ public class StripeActivity extends AppCompatActivity {
         );
     }
 
-    public void runTransactionBlocks(){
-        DatabaseReference goingRef = ref.child("vendors").child(vendorID).child("events").child(eventID).child("going");
-        DatabaseReference grossSalesRef = ref.child("vendors").child(vendorID).child("events").child(eventID).child("grossSales");
-        DatabaseReference netSalesRef = ref.child("vendors").child(vendorID).child("events").child(eventID).child("netSales");
 
-        goingRef.runTransaction(new Transaction.Handler() {
-            @NonNull
-            @Override
-            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                int value;
-                if (mutableData.getValue() == null){
-                    value = 0;
-                } else {
-                    value = ((Long)mutableData.getValue()).intValue();
-                }
-                mutableData.setValue(value + purchaseQuantity);
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-
-            }
-        });
-        grossSalesRef.runTransaction(new Transaction.Handler() {
-            @NonNull
-            @Override
-            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                int value;
-                if (mutableData.getValue() == null){
-                    value = 0;
-                } else {
-                    value = ((Long)mutableData.getValue()).intValue();
-                }
-                mutableData.setValue(value + purchaseTotalWithTax);
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-
-            }
-        });
-        netSalesRef.runTransaction(new Transaction.Handler() {
-            @NonNull
-            @Override
-            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                int value;
-                if (mutableData.getValue() == null){
-                    value = 0;
-                } else {
-                    value = ((Long)mutableData.getValue()).intValue();
-                }
-                mutableData.setValue(value + purchaseTotalWithoutTax);
-                return Transaction.success(mutableData);
-            }
-
-            @Override
-            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
-
-            }
-        });
-    }
 
     public void disableBreaks(){
         pB.setVisibility(View.VISIBLE);
@@ -371,6 +308,7 @@ public class StripeActivity extends AppCompatActivity {
                 wr.close();
 
                 Log.i("responsecode", String.valueOf(conn.getResponseCode()));
+                Log.i("responsemessage", String.valueOf(conn.getResponseMessage()));
 
                 if (conn.getResponseCode() == 200){
                     //Success
@@ -380,6 +318,8 @@ public class StripeActivity extends AppCompatActivity {
                     i.putExtra("map", map);
                     i.putExtra("vendorID", vendorID);
                     i.putExtra("eventID", eventID);
+
+                    runTransactionBlocks();
 
                     startActivity(i);
                 } else {
@@ -413,6 +353,70 @@ public class StripeActivity extends AppCompatActivity {
 
             }
         }
+    }
+
+    public void runTransactionBlocks(){
+        DatabaseReference goingRef = ref.child("vendors").child(vendorID).child("events").child(eventID).child("going");
+        DatabaseReference grossSalesRef = ref.child("vendors").child(vendorID).child("events").child(eventID).child("grossSales");
+        DatabaseReference netSalesRef = ref.child("vendors").child(vendorID).child("events").child(eventID).child("netSales");
+
+        goingRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                int value;
+                if (mutableData.getValue() == null){
+                    value = 0;
+                } else {
+                    value = ((Long)mutableData.getValue()).intValue();
+                }
+                mutableData.setValue(value + purchaseQuantity);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+            }
+        });
+        grossSalesRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                int value;
+                if (mutableData.getValue() == null){
+                    value = 0;
+                } else {
+                    value = ((Long)mutableData.getValue()).intValue();
+                }
+                mutableData.setValue(value + purchaseTotalWithTax);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+            }
+        });
+        netSalesRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                int value;
+                if (mutableData.getValue() == null){
+                    value = 0;
+                } else {
+                    value = ((Long)mutableData.getValue()).intValue();
+                }
+                mutableData.setValue(value + purchaseTotalWithoutTax);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+            }
+        });
     }
 
     private String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException
