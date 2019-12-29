@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -50,10 +51,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.net.URI;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class StripeActivity extends AppCompatActivity {
 
@@ -76,7 +81,7 @@ public class StripeActivity extends AppCompatActivity {
 
     StripeActivity sA;
 
-    HashMap<String, Object> map;
+    HashMap<TicketType, Object> map;
     int purchaseQuantity;
 
     int purchaseTotalWithTax, purchaseTotalWithoutTax;
@@ -87,6 +92,8 @@ public class StripeActivity extends AppCompatActivity {
 
     boolean shouldAllowBack = true;
 
+    int addedTickets = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -96,7 +103,7 @@ public class StripeActivity extends AppCompatActivity {
 
         amount = getIntent().getIntExtra("amount", 0);
         purchaseQuantity = getIntent().getIntExtra("purchaseQuantity", 0);
-        map = (HashMap<String,Object>)getIntent().getSerializableExtra("map");
+        map = (HashMap<TicketType,Object>)getIntent().getSerializableExtra("map");
         name = "TicketHawk";
 
         feeAmount = getIntent().getIntExtra("feeAmount", 0);
@@ -313,6 +320,8 @@ public class StripeActivity extends AppCompatActivity {
                 if (conn.getResponseCode() == 200){
                     //Success
 
+                    /**
+
                     Intent i = new Intent(StripeActivity.this, CustomerTicketGeneration.class);
 
                     i.putExtra("map", map);
@@ -322,6 +331,11 @@ public class StripeActivity extends AppCompatActivity {
                     runTransactionBlocks();
 
                     startActivity(i);
+
+                     **/
+
+                    runTransactionBlocks();
+                    generateTickets();
                 } else {
 
                 }
@@ -437,6 +451,128 @@ public class StripeActivity extends AppCompatActivity {
         }
 
         return result.toString();
+    }
+
+    private void generateTickets(){
+
+
+        ref.child("vendors").child(vendorID).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (!dataSnapshot.exists()){
+                    return;
+                }
+
+                String eventTitle = (String)dataSnapshot.child("eventTitle").getValue();
+
+                String dateAndTime = (String)dataSnapshot.child("startDateAndTime").getValue();
+
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
+                Date d1 = new Date();
+                try {
+                    d1 = simpleDateFormat.parse(dateAndTime);
+                } catch (Exception e) {
+
+                }
+                SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("MM-dd-yyyy h:mm a", Locale.US);
+                try {
+                    dateAndTime = simpleDateFormat2.format(d1);
+                } catch (Exception e) {
+
+                }
+
+                String location = (String)dataSnapshot.child("location").getValue();
+                String dressCodeString = (String)dataSnapshot.child("dressCode").getValue();
+
+                String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+
+                for (Map.Entry<TicketType, Object> e : map.entrySet()){
+
+                    int countdown = (int)e.getValue();
+
+                    while (countdown != 0){
+
+                        String key = ref.child("vendors").child(vendorID).child("events").child(eventID).child("activeTickets").push().getKey();
+
+                        HashMap<String, Object> ticket = new HashMap<>();
+
+                        ticket.put("userName", userName);
+                        ticket.put("title", eventTitle);
+                        ticket.put("dateAndTime", dateAndTime);
+                        ticket.put("location", location);
+                        ticket.put("ticketType", e.getKey().name);
+                        ticket.put("key", key);
+
+                        ref.child("vendors").child(vendorID).child("events").child(eventID).child("activeTickets").child(key).setValue(ticket, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError firebaseError, DatabaseReference ref) {
+                                if (firebaseError != null) {
+
+                                } else {
+                                    addedTickets++;
+                                    determineIfFinished(addedTickets);
+
+                                }
+                            }
+                        });
+
+                        ref.child("customers").child(FirebaseAuth.getInstance().getUid()).child("activeTickets").child(key).setValue(ticket, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(DatabaseError firebaseError, DatabaseReference ref) {
+                                if (firebaseError != null) {
+
+                                } else {
+                                    addedTickets++;
+                                    determineIfFinished(addedTickets);
+                                }
+                            }
+                        });
+                        countdown--;
+                    }
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    void determineIfFinished(int quantity) {
+        int totalQuantity = 0;
+
+        for (Map.Entry<TicketType, Object> e: map.entrySet()){
+            totalQuantity += (int)e.getValue();
+        }
+
+        if (quantity == totalQuantity * 2){
+
+            new AlertDialog.Builder((StripeActivity.this))
+                    .setTitle("Your Purchase was Successful!")
+                    .setMessage("View your new tickets in the 'My Tickets' tab.")
+
+                    // Specifying a listener allows you to take an action before dismissing the dialog.
+                    // The dialog is automatically dismissed when a dialog button is clicked.
+                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Pop to main customer activity
+
+                            Intent i = new Intent(StripeActivity.this, CustomerMainActivity.class);
+                            //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(i);
+                        }
+                    })
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .show();
+
+        }
+
     }
 
 

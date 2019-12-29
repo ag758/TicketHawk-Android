@@ -30,7 +30,7 @@ public class CustomerTicketGeneration extends Activity {
     String vendorID = "";
     String eventID = "";
 
-    int addedTickets = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,94 +50,6 @@ public class CustomerTicketGeneration extends Activity {
     public void onResume(){
         super.onResume();
 
-
-
-
-        ref.child("vendors").child(vendorID).child("events").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-                if (!dataSnapshot.exists()){
-                    return;
-                }
-
-                String eventTitle = (String)dataSnapshot.child("eventTitle").getValue();
-
-                String dateAndTime = (String)dataSnapshot.child("startDateAndTime").getValue();
-
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.US);
-                Date d1 = new Date();
-                try {
-                    d1 = simpleDateFormat.parse(dateAndTime);
-                } catch (Exception e) {
-
-                }
-                SimpleDateFormat simpleDateFormat2 = new SimpleDateFormat("MM-dd-yyyy h:mm a", Locale.US);
-                try {
-                    dateAndTime = simpleDateFormat2.format(d1);
-                } catch (Exception e) {
-
-                }
-
-                String location = (String)dataSnapshot.child("location").getValue();
-                String dressCodeString = (String)dataSnapshot.child("dressCode").getValue();
-
-                String userName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
-
-                for (Map.Entry<TicketType, Object> e : map.entrySet()){
-
-                    int countdown = (int)e.getValue();
-
-                    while (countdown != 0){
-
-                        String key = ref.child("vendors").child(vendorID).child("events").child(eventID).child("activeTickets").push().getKey();
-
-                        HashMap<String, Object> ticket = new HashMap<>();
-
-                        ticket.put("userName", userName);
-                        ticket.put("title", eventTitle);
-                        ticket.put("dateAndTime", dateAndTime);
-                        ticket.put("location", location);
-                        ticket.put("ticketType", e.getKey().name);
-                        ticket.put("key", key);
-
-                        ref.child("vendors").child(vendorID).child("events").child(eventID).child("activeTickets").child(key).setValue(ticket, new DatabaseReference.CompletionListener() {
-                            @Override
-                            public void onComplete(DatabaseError firebaseError, DatabaseReference ref) {
-                                if (firebaseError != null) {
-
-                                } else {
-                                    addedTickets++;
-                                    determineIfFinished(addedTickets);
-
-                                }
-                            }
-                        });
-
-                        ref.child("customers").child(FirebaseAuth.getInstance().getUid()).child("activeTickets").child(key).setValue(ticket, new DatabaseReference.CompletionListener() {
-                            @Override
-                            public void onComplete(DatabaseError firebaseError, DatabaseReference ref) {
-                                if (firebaseError != null) {
-
-                                } else {
-                                    addedTickets++;
-                                    determineIfFinished(addedTickets);
-                                }
-                            }
-                        });
-                        countdown--;
-                    }
-
-                }
-
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
     }
 
     @Override
@@ -145,33 +57,5 @@ public class CustomerTicketGeneration extends Activity {
         //do nothing
     }
 
-    void determineIfFinished(int quantity) {
-        int totalQuantity = 0;
-        for (Map.Entry<TicketType, Object> e: map.entrySet()){
-            totalQuantity += (int)e.getValue();
-        }
 
-        if (quantity == totalQuantity * 2){
-
-            new AlertDialog.Builder((CustomerTicketGeneration.this))
-                    .setTitle("Your Purchase was Successful!")
-                    .setMessage("View your new tickets in the 'My Tickets' tab.")
-
-                    // Specifying a listener allows you to take an action before dismissing the dialog.
-                    // The dialog is automatically dismissed when a dialog button is clicked.
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Pop to main customer activity
-
-                            Intent i = new Intent(CustomerTicketGeneration.this, CustomerMainActivity.class);
-                            //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(i);
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
-
-        }
-
-    }
 }
