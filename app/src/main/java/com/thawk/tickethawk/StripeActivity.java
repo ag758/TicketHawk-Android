@@ -553,23 +553,67 @@ public class StripeActivity extends AppCompatActivity {
 
         if (quantity == totalQuantity * 2){
 
-            new AlertDialog.Builder((StripeActivity.this))
-                    .setTitle("Your Purchase was Successful!")
-                    .setMessage("View your new tickets in the 'My Tickets' tab.")
+            //Check if the event has been closed already
 
-                    // Specifying a listener allows you to take an action before dismissing the dialog.
-                    // The dialog is automatically dismissed when a dialog button is clicked.
-                    .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // Pop to main customer activity
+            ref.child("vendors").child(vendorID).child("closedEvents").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                            Intent i = new Intent(StripeActivity.this, CustomerMainActivity.class);
-                            //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                            startActivity(i);
-                        }
-                    })
-                    .setIcon(android.R.drawable.ic_dialog_alert)
-                    .show();
+
+                    if (dataSnapshot.getValue() == null){
+
+                        new AlertDialog.Builder((StripeActivity.this))
+                                .setTitle("Your Purchase was Successful!")
+                                .setMessage("View your new tickets in the 'My Tickets' tab.")
+
+                                // Specifying a listener allows you to take an action before dismissing the dialog.
+                                // The dialog is automatically dismissed when a dialog button is clicked.
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // Pop to main customer activity
+
+                                        Intent i = new Intent(StripeActivity.this, CustomerMainActivity.class);
+                                        //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(i);
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
+                    } else {
+
+                        ref.child("vendors").child(vendorID).child("events").child(eventID).removeValue();
+
+                        new AlertDialog.Builder((StripeActivity.this))
+                                .setTitle("Your Purchase was Unsuccessful!")
+                                .setMessage("Contact TicketHawk support for information on refunds.")
+
+                                // Specifying a listener allows you to take an action before dismissing the dialog.
+                                // The dialog is automatically dismissed when a dialog button is clicked.
+                                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        // Pop to main customer activity
+
+                                        Intent i = new Intent(StripeActivity.this, CustomerMainActivity.class);
+                                        //i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        startActivity(i);
+                                    }
+                                })
+                                .setIcon(android.R.drawable.ic_dialog_alert)
+                                .show();
+
+                    }
+
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+
+
 
         }
 
