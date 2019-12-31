@@ -407,7 +407,15 @@ public class CustomerMainBrowseFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                boolean didFinishSigningUp = (boolean)dataSnapshot.child("didFinishSigningUp").getValue();
+                System.out.println("error child" + k);
+
+                boolean didFinishSigningUp = false;
+
+                //if (dataSnapshot.child("didFinishSigningUp").getValue() != null){
+                    didFinishSigningUp = (boolean)(dataSnapshot.child("didFinishSigningUp").getValue());
+                //}
+
+
 
                 if (didFinishSigningUp){
 

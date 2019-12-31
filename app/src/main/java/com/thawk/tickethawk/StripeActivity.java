@@ -551,6 +551,27 @@ public class StripeActivity extends AppCompatActivity {
             totalQuantity += (int)e.getValue();
         }
 
+        /**
+
+        ref.child("vendors").child(vendorID).child("closedEvents").child(eventID).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                if (dataSnapshot.getValue() != null){
+                    ref.child("vendors").child(vendorID).child("events").child(eventID).removeValue();
+                }
+
+
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+         **/
+
+
         if (quantity == totalQuantity * 2){
 
             //Check if the event has been closed already
