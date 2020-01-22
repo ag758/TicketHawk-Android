@@ -6,11 +6,11 @@ android {
     buildToolsVersion "29.0.2"
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
-        applicationId "com.example.tickethawk"
+        applicationId "com.thawk.tickethawk"
         minSdkVersion 21
         targetSdkVersion 29
         multiDexEnabled true
-        versionCode 1
+        versionCode 3
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -19,6 +19,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    lintOptions {
+        checkReleaseBuilds false
+        // Or, if you prefer, you can continue to check for errors in release builds,
+        // but continue the build even when errors are found:
+        abortOnError false
     }
 }
 

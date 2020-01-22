@@ -219,7 +219,7 @@ public class EventTicketNumberActivity extends Activity {
         this.paymentTotalWithoutTaxInt = total;
 
         if (total > 0){
-            this.fees = (int)(Math.ceil(  (Double.valueOf(total)* 0.15 ) + 30)  );
+            this.fees = (int)(Math.ceil(  (Double.valueOf(total)* 0.15 ) + 70)  );
             this.paymentTotalInt = (this.fees) + total;
         } else {
             this.fees = 0;

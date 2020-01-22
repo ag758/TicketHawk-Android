@@ -13,6 +13,7 @@
         android:roundIcon="@mipmap/thawk_icon"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
+        android:debuggable = "false"
         >
 
         <uses-library
@@ -73,11 +74,6 @@
 
         </activity>
 
-        <activity android:name="com.thawk.tickethawk.CustomerTicketGeneration"
-            android:screenOrientation="portrait">
-
-
-        </activity>
 
         <activity android:name="com.thawk.tickethawk.CustomerArchiveTicketActivity"
             android:screenOrientation="portrait">

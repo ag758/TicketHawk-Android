@@ -1,14 +1,14 @@
 <resources>
     <string name="app_name">TicketHawk</string>
 
-    <string name="publishableKey">pk_test_fKyLqJd3qZN9L1aUlHCIobOi00PTyZP089</string>
+    <string name="publishableKey">pk_live_Es4NfgnJnDuJpaz2IWEEY1N000Unj0FodD</string>
     <string name="baseURLString">https://secret-river-64641.herokuapp.com/</string>
     <string name="defaultCurrency">usd</string>
     <string name="defaultDescription">Purchase from TicketHawk</string>
-    <string name="privacyPolicyURL">http://www.apple.com</string>
-    <string name="termsOfServiceURL">http://www.google.com</string>
-    <string name="howToGetPaidURL">http://www.yahoo.com</string>
-    <string name="howToReportURL">http://www.facebook.com</string>
+
+    <string name="privacyPolicyURL">https://www.tickethawkapp.com/privacy-policy</string>
+    <string name="termsOfServiceURL">https://www.tickethawkapp.com/terms-conditions</string>
+    <string name="howToReportURL">https://www.tickethawkapp.com/report</string>
 
     <string name="facebook_application_id" translatable="false">1433152453476083</string>
     <!-- Facebook Application ID, prefixed by 'fb'. Enables Chrome Custom tabs. -->
